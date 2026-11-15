@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "slug": "synthetic-second",
+    "title": "A second synthetic document",
+    "date": "2026-01-01",
+    "description": "A small hand-authored example manifest, not an exported notebook."
+  },
+  "provenance": {
+    "exporterVersion": "synthetic",
+    "notebookVersion": "1",
+    "sessionVersion": "1",
+    "inputSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "publicationConfigSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "producerVersion": "synthetic",
+    "sourceHashes": {}
+  },
+  "assetBase": "/assets",
+  "cells": [
+    {
+      "id": "second",
+      "ordinal": 0,
+      "sourceLanguage": "python",
+      "hideCode": false,
+      "disabled": false,
+      "code": "folded",
+      "console": "collapsed",
+      "outputs": [
+        {
+          "type": "text",
+          "text": "Two independent documents can share one page."
+        }
+      ],
+      "consoleOutputs": []
+    }
+  ],
+  "toc": [],
+  "plainText": "Two independent documents can share one page.",
+  "assets": [],
+  "diagnostics": []
+}

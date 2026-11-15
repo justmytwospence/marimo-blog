@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "slug": "synthetic-showcase",
+    "title": "A synthetic showcase",
+    "date": "2026-01-01",
+    "description": "A small hand-authored example manifest, not an exported notebook."
+  },
+  "provenance": {
+    "exporterVersion": "synthetic",
+    "notebookVersion": "1",
+    "sessionVersion": "1",
+    "inputSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "publicationConfigSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "producerVersion": "synthetic",
+    "sourceHashes": {}
+  },
+  "assetBase": "/assets",
+  "cells": [
+    {
+      "id": "intro",
+      "ordinal": 0,
+      "sourceLanguage": "python",
+      "hideCode": false,
+      "disabled": false,
+      "code": "folded",
+      "console": "collapsed",
+      "outputs": [
+        {
+          "type": "html",
+          "html": "<h2 id=\"introduction\">Introduction</h2><p>This synthetic document demonstrates saved prose without running Python.</p>"
+        },
+        {
+          "type": "callout",
+          "kind": "Note",
+          "children": [
+            {
+              "type": "text",
+              "text": "Output is already captured."
+            }
+          ]
+        },
+        {
+          "type": "statistic",
+          "label": "Example result",
+          "value": "42"
+        },
+        {
+          "type": "tabs",
+          "panels": [
+            {
+              "title": "First",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "A saved result."
+                }
+              ]
+            },
+            {
+              "title": "Second",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Another saved result."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "consoleOutputs": []
+    }
+  ],
+  "toc": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "level": 2
+    }
+  ],
+  "plainText": "Introduction. This synthetic document demonstrates saved prose without running Python.",
+  "assets": [],
+  "diagnostics": []
+}

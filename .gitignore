@@ -1,0 +1,9 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+*.tgz
+*.tsbuildinfo
+examples/*/node_modules/
+examples/*/dist/
+examples/*/.next/

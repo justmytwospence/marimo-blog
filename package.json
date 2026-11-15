@@ -1,0 +1,105 @@
+{
+  "name": "marimo-blog",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Compile executed marimo exports into native React articles without a Python runtime.",
+  "license": "MIT",
+  "author": "Spencer Boucher",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justmytwospence/marimo-blog.git"
+  },
+  "homepage": "https://github.com/justmytwospence/marimo-blog#readme",
+  "bugs": "https://github.com/justmytwospence/marimo-blog/issues",
+  "keywords": ["marimo", "notebook", "react", "publishing", "ssr"],
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "marimo-blog": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    }
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:package": "node scripts/test-package.mjs",
+    "build:examples": "node scripts/build-examples.mjs"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "css-tree": "^3.1.0",
+    "csv-parse": "^7.0.3",
+    "highlight.js": "^11.11.0",
+    "katex": "^0.19.1",
+    "parse5": "^8.0.0",
+    "plotly.js-dist-min": "^3.0.0",
+    "sanitize-html": "^2.17.0",
+    "vega": "^6.0.0",
+    "vega-embed": "^7.0.0",
+    "vega-lite": "^6.0.0",
+    "yaml": "^2.8.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.0.0",
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.55.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/css-tree": "^2.3.0",
+    "@types/node": "^22.0.0",
+    "@types/plotly.js": "^3.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/sanitize-html": "^2.16.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "jsdom": "^26.0.0",
+    "publint": "^0.3.25",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^6.0.0",
+    "vitest": "^5.1.0"
+  }
+}

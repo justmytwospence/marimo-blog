@@ -1,0 +1,45 @@
+name: Publish npm package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact package version on a verified v-prefixed tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - name: Verify tag and version
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          node -e 'if (!/^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9.-]+)?$/.test(process.env.RELEASE_VERSION)) process.exit(1)'
+          test "$(node -p 'require("./package.json").version')" = "$RELEASE_VERSION"
+          test "$(git rev-parse "v${RELEASE_VERSION}^{commit}")" = "$(git rev-parse HEAD)"
+      - run: npm ci
+      - run: npm run lint && npm run typecheck && npm run test && npm run build
+      - run: npm run test:package && npm run build:examples
+      - run: npm audit --omit=dev --audit-level=moderate
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:e2e
+      - run: npm publish --provenance --access public

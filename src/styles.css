@@ -1,0 +1,105 @@
+.marimo-blog {
+  --mb-bg: #fff;
+  --mb-text: #20252c;
+  --mb-muted: #545e69;
+  --mb-border: #cdd3d8;
+  --mb-accent: #1658a7;
+  --mb-code-bg: #f2f4f6;
+  --mb-surface: #f8f9fa;
+  --mb-prose-width: 72ch;
+  --mb-max-width: 1120px;
+  --mb-toc-offset: 5rem;
+  --mb-space: 1rem;
+  color: var(--mb-text);
+  background: var(--mb-bg);
+  font: inherit;
+  line-height: 1.65;
+  max-width: var(--mb-max-width);
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+  container-type: inline-size;
+}
+@media (prefers-color-scheme: dark) {
+  .marimo-blog[data-theme='auto'] {
+    --mb-bg: #171c22;
+    --mb-text: #e9ebee;
+    --mb-muted: #b6c0cb;
+    --mb-border: #4a5563;
+    --mb-accent: #9ccaff;
+    --mb-code-bg: #242a33;
+    --mb-surface: #20262e;
+  }
+}
+.marimo-blog[data-theme='dark'], .dark .marimo-blog:not([data-theme='light']) {
+  --mb-bg: #171c22;
+  --mb-text: #e9ebee;
+  --mb-muted: #b6c0cb;
+  --mb-border: #4a5563;
+  --mb-accent: #9ccaff;
+  --mb-code-bg: #242a33;
+  --mb-surface: #20262e;
+}
+.marimo-blog *, .marimo-blog *::before, .marimo-blog *::after { box-sizing: border-box; }
+.marimo-blog :where(a) { color: var(--mb-accent); text-underline-offset: .15em; }
+.marimo-blog :where(button, summary, a, [tabindex]):focus-visible { outline: 3px solid var(--mb-accent); outline-offset: 3px; }
+.marimo-blog :where(h1, h2, h3, h4, h5, h6, [id]) { scroll-margin-top: var(--mb-toc-offset); }
+.marimo-blog .mb-header, .marimo-blog .mb-prose { max-width: var(--mb-prose-width); }
+.marimo-blog .mb-header { margin-block: 2rem; }
+.marimo-blog .mb-header h1 { line-height: 1.2; }
+.marimo-blog .mb-muted, .marimo-blog .mb-caption, .marimo-blog .mb-meta { color: var(--mb-muted); }
+.marimo-blog .mb-cell { margin-block: 1.5rem; min-width: 0; }
+.marimo-blog .mb-output { min-width: 0; margin-block: var(--mb-space); }
+.marimo-blog .mb-prose :where(p, li) { max-width: var(--mb-prose-width); }
+.marimo-blog .mb-prose :where(h2, h3, h4, h5, h6) { font-weight: 700; line-height: 1.3; margin-block: 1.8em .65em; }
+.marimo-blog .mb-prose h2 { font-size: clamp(1.55rem, 3cqi, 2rem); }
+.marimo-blog .mb-prose h3 { font-size: clamp(1.3rem, 2.5cqi, 1.55rem); }
+.marimo-blog .mb-prose h4 { font-size: 1.15rem; }
+.marimo-blog .mb-prose :where(p, ul, ol, blockquote, pre, table) { margin-block: 0 1.25rem; }
+.marimo-blog .mb-prose :where(ul, ol) { padding-inline-start: 1.6rem; }
+.marimo-blog .mb-prose ul { list-style: disc; }
+.marimo-blog .mb-prose ol { list-style: decimal; }
+.marimo-blog .mb-prose li { margin-block: .3rem; }
+.marimo-blog .mb-prose li::marker { color: var(--mb-muted); }
+.marimo-blog .mb-prose blockquote { border-inline-start: 3px solid var(--mb-border); padding-inline-start: 1.2rem; color: var(--mb-muted); font-style: italic; }
+.marimo-blog .mb-prose :where(strong) { font-weight: 700; }
+.marimo-blog .mb-prose :where(a) { text-decoration: underline; }
+.marimo-blog .mb-prose :where(img, video, svg), .marimo-blog .mb-media { max-width: 100%; height: auto; }
+.marimo-blog .mb-prose :where(table), .marimo-blog .mb-table { border-collapse: collapse; width: 100%; }
+.marimo-blog :where(th, td) { text-align: start; border: 1px solid var(--mb-border); padding: .35rem .6rem; }
+.marimo-blog :where(th) { background: var(--mb-surface); }
+.marimo-blog .mb-table-wrap, .marimo-blog .mb-code-scroll { overflow-x: auto; max-width: 100%; }
+.marimo-blog :where(pre, code, .mb-code) { font-family: var(--mb-code-font, ui-monospace, SFMono-Regular, Consolas, monospace); }
+.marimo-blog pre { white-space: pre; tab-size: 4; background: var(--mb-code-bg); padding: 1rem; border-radius: .4rem; overflow-x: auto; }
+.marimo-blog :where(button, .mb-button) { font: inherit; color: inherit; background: var(--mb-surface); border: 1px solid var(--mb-border); border-radius: .3rem; padding: .25rem .6rem; cursor: pointer; }
+.marimo-blog :where(button):hover { border-color: var(--mb-accent); }
+.marimo-blog .mb-actions, .marimo-blog .mb-tab-list { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.marimo-blog .mb-tab-list[hidden] { display: none; }
+.marimo-blog .mb-code-details, .marimo-blog .mb-console-details, .marimo-blog .mb-toc, .marimo-blog .mb-panel, .marimo-blog .mb-notice { border: 1px solid var(--mb-border); border-radius: .4rem; padding: .6rem 1rem; }
+.marimo-blog .mb-notice { background: var(--mb-surface); }
+.marimo-blog .mb-code-details > summary, .marimo-blog .mb-console-details > summary { cursor: pointer; }
+.marimo-blog .mb-layout { display: flex; flex-wrap: wrap; gap: var(--mb-space); }
+.marimo-blog .mb-layout > * { flex: 1 1 min(100%, 18rem); min-width: 0; }
+.marimo-blog .mb-layout-stack, .marimo-blog .mb-layout-linear { flex-direction: column; }
+.marimo-blog .mb-layout-stack > *, .marimo-blog .mb-layout-linear > * { flex: 0 1 auto; }
+.marimo-blog .mb-tab-panels > .mb-panel { margin-block: .6rem; }
+.marimo-blog .mb-tabs[data-enhanced='true'] .mb-panel-title { display: none; }
+.marimo-blog .mb-figure { margin-inline: 0; }
+.marimo-blog .mb-chart { width: 100%; min-height: 240px; }
+.marimo-blog .mb-chart[aria-busy='true'] { background: var(--mb-surface); }
+.marimo-blog .mb-sandbox { width: 100%; height: 400px; border: 1px solid var(--mb-border); }
+.marimo-blog .mb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@container (max-width: 650px) {
+  .marimo-blog .mb-layout { display: block; }
+  .marimo-blog .mb-layout > * { margin-block: var(--mb-space); }
+  .marimo-blog .mb-tabs:not([data-enhanced='true']) .mb-tab-list { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .marimo-blog *, .marimo-blog *::before, .marimo-blog *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@media print {
+  .marimo-blog { color: #000; background: #fff; max-width: none; }
+  .marimo-blog .mb-actions, .marimo-blog .mb-tab-list, .marimo-blog .mb-toc-enhancement, .marimo-blog .mb-load { display: none !important; }
+  .marimo-blog details { display: block; }
+  .marimo-blog details > summary { display: none; }
+  .marimo-blog details > *:not(summary) { display: block !important; }
+  .marimo-blog .mb-panel { display: block !important; break-inside: avoid; }
+  .marimo-blog pre { white-space: pre-wrap; }
+}
