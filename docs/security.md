@@ -9,11 +9,11 @@ The compiler handles exports as data; authoring and custom adapters execute trus
 - Publication HTML uses allowlisted markup, attributes and CSS. Math uses trust-disabled KaTeX and MathML. SVG assets reject active elements, external references and unsupported attributes before being written to a web origin.
 - Structured payloads are separate hashed assets. Prototype-pollution keys, unreviewed remote resources, path traversal and public-file symlinks are rejected.
 - Use `readDocument` or `parseDocument` at the input boundary. Renderer sanitization is defense in depth, not permission to accept arbitrary uploads.
-- Review source, console, outputs, assets and WASM inventories for private data. `includeSource: false` removes compiled source and its download; hiding/folding code does not. Neither removes secrets in outputs.
+- Review source, console, outputs, assets and WASM inventories for private data. `includeSource: false` removes compiled source and its download; hiding/folding code does not. Neither removes secrets in outputs. Native folds retain their content in server-rendered HTML, even with JavaScript disabled. View switches and `htmlRole` are presentation, not access controls.
 
 ## Scripted output
 
-A reviewed output may opt into `html: sandbox`. It loads only after reader action in an iframe with `sandbox="allow-scripts"` and `referrerpolicy="no-referrer"`. It has no same-origin, form, popup or top-navigation permission.
+A reviewed output may opt into `html: sandbox`. It loads automatically as it approaches the viewport in an iframe with `sandbox="allow-scripts"` and `referrerpolicy="no-referrer"`. It has no same-origin, form, popup or top-navigation permission.
 
 Both compiler and renderer add CSP. Default sources, connections, forms, base URLs, nested frames and workers are blocked. Only inline script/style, data/blob images/fonts and exact HTTPS script URLs from `sandboxScriptUrls` are permitted. Remote script URLs can disclose reader activity and change outside your control.
 

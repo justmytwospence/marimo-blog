@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { metadataSchema } from '../schema.js';
 import { fail } from '../diagnostics.js';
 
-const outputConfig = z.strictObject({ caption: z.string().optional(), alt: z.string().optional(), poster: z.string().optional(), html: z.enum(['sanitize', 'sandbox']).optional(), sandboxAllowEval: z.boolean().optional() }).refine((value) => !value.sandboxAllowEval || value.html === 'sandbox', 'sandboxAllowEval requires an explicit sandbox output');
+const outputConfig = z.strictObject({ caption: z.string().optional(), alt: z.string().optional(), poster: z.string().optional(), html: z.enum(['sanitize', 'sandbox']).optional(), htmlRole: z.enum(['narrative', 'result']).optional(), sandboxAllowEval: z.boolean().optional() }).refine((value) => !value.sandboxAllowEval || value.html === 'sandbox', 'sandboxAllowEval requires an explicit sandbox output');
 const cellConfig = z.strictObject({ include: z.boolean().optional(), code: z.enum(['folded', 'visible', 'hidden']).optional(), allowDiagnostics: z.array(z.string()).optional(), outputs: z.record(z.string().regex(/^(0|[1-9][0-9]*)$/), outputConfig).optional() });
 export const publicationSchema = metadataSchema.extend({ includeSource: z.boolean().optional(), code: z.enum(['folded', 'visible', 'hidden']).optional(), console: z.enum(['collapsed', 'visible', 'hidden']).optional(), cells: z.record(z.string(), cellConfig).optional(), resourceOrigins: z.array(z.url()).optional(), sandboxScriptUrls: z.array(z.url().startsWith('https://').refine((value) => !/[\s'"<>;]/.test(value) && new URL(value).href === value)).optional() }).strict();
 export type PublicationConfig = z.infer<typeof publicationSchema>;

@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { emitOutputStatus } from './presentation-events.js';
 import { safeAssetUrl } from '../react/safety.js';
 
 type Value = string | number | boolean | null;
@@ -23,6 +24,10 @@ export function DataTable({ asset, caption, preview }: { asset: string; caption?
   const [table, setTable] = useState<TablePayload | undefined>(isTable(preview) ? preview : undefined);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const root = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (root.current && (error || loaded)) emitOutputStatus(root.current, { state: error ? 'error' : 'ready' });
+  }, [error, loaded]);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<{ column: number; descending: boolean }>();
   const [page, setPage] = useState(0);
@@ -36,7 +41,7 @@ export function DataTable({ asset, caption, preview }: { asset: string; caption?
     }).map(({ row }) => row);
   }, [table, query, sort]);
   const pageRows = loaded ? rows.slice(page * 20, page * 20 + 20) : (table?.rows ?? []).slice(0, 20);
-  return <figure className="mb-output mb-figure"><div className="mb-actions">
+  return <figure ref={root} className="mb-output mb-figure"><div className="mb-actions">
     {url && !loaded && <button type="button" onClick={async () => {
       try { const response = await fetch(url, { credentials: 'omit' }); if (!response.ok) throw Error('Table unavailable'); const data: unknown = await response.json(); if (!isTable(data)) throw Error('Invalid table'); setTable(data); setLoaded(true); setError(false); } catch { setError(true); }
     }}>{error ? 'Retry table' : 'Search and sort exported rows'}</button>}

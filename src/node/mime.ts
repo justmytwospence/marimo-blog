@@ -4,7 +4,7 @@ import * as cssTree from 'css-tree';
 import { parse as parseCsv } from 'csv-parse/sync';
 import type { MarimoNode, MarimoDiagnostic } from '../types.js';
 import { diagnostic, fail } from '../diagnostics.js';
-import { compileHtml, type HtmlContext } from './html.js';
+import { compileHtml, normalizeMarimoMarkup, type HtmlContext } from './html.js';
 import { AssetCollector } from './assets.js';
 import { sanitizeOutput } from './sanitize.js';
 
@@ -15,7 +15,7 @@ export interface OutputAdapter {
   matches(output: unknown): boolean;
   compile(output: unknown, context: MimeContext): MarimoNode[] | Promise<MarimoNode[]>;
 }
-export interface MimeContext { html: HtmlContext; assets: AssetCollector; diagnostics: MarimoDiagnostic[]; cellId: string; outputIndex: number; htmlMode?: 'sanitize' | 'sandbox'; caption?: string; alt?: string; poster?: string; sandboxScriptUrls?: string[]; sandboxAllowEval?: boolean; depth?: number; exporterVersion?: string; adapters?: readonly OutputAdapter[] }
+export interface MimeContext { html: HtmlContext; assets: AssetCollector; diagnostics: MarimoDiagnostic[]; cellId: string; outputIndex: number; htmlMode?: 'sanitize' | 'sandbox'; htmlRole?: 'narrative' | 'result'; caption?: string; alt?: string; poster?: string; sandboxScriptUrls?: string[]; sandboxAllowEval?: boolean; depth?: number; exporterVersion?: string; adapters?: readonly OutputAdapter[] }
 async function assetJson(value: unknown, type: 'plotly' | 'vega' | 'table' | 'json', context: MimeContext): Promise<MarimoNode> {
   if (type !== 'json' && (!value || typeof value !== 'object')) fail('MB_SCHEMA', 'Invalid structured MIME payload', 'Re-export with a valid chart/table payload.');
   if (value === undefined || typeof value === 'number' && !Number.isFinite(value)) fail('MB_SCHEMA', 'Invalid JSON payload', 'Re-export a JSON-compatible value.');
@@ -137,7 +137,7 @@ export async function compileMime(output: unknown, context: MimeContext): Promis
   }
   const inputHtml = bundle['text/html'] ?? bundle['text/markdown'];
   if (typeof inputHtml === 'string') {
-    let html = inputHtml;
+    let html = context.htmlMode === 'sandbox' ? inputHtml : normalizeMarimoMarkup(inputHtml);
     const tree = parseFragment(html) as unknown as HtmlNode;
     // Official Markdown serializes TeX as ||(...||) / ||[...||], including
     // inline formulas within prose. Replace in place, not by extracting a
@@ -299,7 +299,7 @@ export async function compileMime(output: unknown, context: MimeContext): Promis
     }
     if (/<script\b|<iframe\b|\son\w+\s*=/i.test(html)) context.diagnostics.push(diagnostic('MB_SCRIPT_SANDBOX', 'Script/iframe/event handler removed from output HTML', 'Explicitly sandbox reviewed scripted output.', context.cellId, context.outputIndex));
     const compiled = compileHtml(html, context.html);
-    return [{ type: 'html', html: compiled.html }];
+    return [{ type: 'html', html: compiled.html, ...(context.htmlRole ? { role: context.htmlRole } : {}) }];
   }
   if (typeof bundle['text/latex'] === 'string') {
     const source = bundle['text/latex'];
@@ -312,7 +312,11 @@ export async function compileMime(output: unknown, context: MimeContext): Promis
     return [{ type: 'image', src: await context.assets.url(src.startsWith('data:') ? src : `data:${mime};base64,${src}`, 'resource'), alt: context.alt ?? '' , caption: context.caption }];
   }
   if ('application/json' in bundle) return [await assetJson(bundle['application/json'], 'json', context)];
-  if ('text/plain' in bundle) return [{ type: 'text', text: String(bundle['text/plain']) }];
+  if ('text/plain' in bundle) {
+    const text = String(bundle['text/plain']);
+    // An empty return value has nothing to show.
+    return text.trim() === '' ? [] : [{ type: 'text', text }];
+  }
   const mime = Object.keys(bundle)[0] ?? 'unknown';
   context.diagnostics.push(diagnostic('MB_UNSUPPORTED', `Unsupported MIME ${mime}`, 'Use a supported output or allow this exact cell diagnostic.', context.cellId, context.outputIndex));
   return [{ type: 'unsupported', mime, message: 'This exported output cannot be presented statically.' }];

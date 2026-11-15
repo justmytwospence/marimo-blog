@@ -26,6 +26,15 @@ describe('safe content-addressed publication', () => {
     await expect(collector.url('../secret.png', 'resource')).rejects.toThrow(/MB_ASSET_MISSING|MB_UNSAFE_URL/);
     await expect(collector.url('/@file/absent', 'resource')).rejects.toThrow(/MB_ASSET_MISSING/);
   });
+  it('preserves HTML roles through recursive URL rewriting and sanitization', async () => {
+    const collector = new AssetCollector({ files: {}, assetBase: '/assets' });
+    const nodes = await collector.rewrite([{ type: 'callout', kind: 'note', children: [{ type: 'html', role: 'result', html: '<p onclick="bad()"><img src="data:image/png;base64,aGVsbG8="></p>' }, { type: 'html', html: '<p>Unmarked</p>' }] }]);
+    expect(nodes).toMatchObject([{ type: 'callout', children: [{ type: 'html', role: 'result', html: expect.stringMatching(/src="\/assets\/[a-f0-9]{64}\.png"/) }, { type: 'html', html: '<p>Unmarked</p>' }] }]);
+    expect(JSON.stringify(nodes)).not.toContain('onclick');
+    const callout = nodes[0]!;
+    if (callout.type !== 'callout') throw Error('Expected callout');
+    expect(callout.children[1]).not.toHaveProperty('role');
+  });
   it('rejects symlinks and confines public assets', async () => {
     const root = await temp();
     await mkdir(join(root, 'public'));

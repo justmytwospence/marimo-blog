@@ -95,7 +95,7 @@ export class AssetCollector {
           for (const child of element.childNodes ?? []) await walk(child, depth + 1);
         };
         await walk(root);
-        result.push({ type: 'html', html: sanitizeOutput(serialize(root as never)) });
+        result.push({ ...node, html: sanitizeOutput(serialize(root as never)) });
       } else if (node.type === 'image' || node.type === 'media') result.push({ ...node, src: await this.url(node.src, 'resource') });
       else if (node.type === 'layout' || node.type === 'callout') result.push({ ...node, children: await this.rewrite(node.children) });
       else if (node.type === 'tabs' || node.type === 'accordion') result.push({ ...node, panels: await Promise.all(node.panels.map(async (panel) => ({ ...panel, children: await this.rewrite(panel.children) }))) });

@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { emitOutputStatus } from './presentation-events.js';
 import { safeAssetUrl } from '../react/safety.js';
 
 export function JsonTree({ asset, caption }: { asset: string; caption?: string }) {
   const url = safeAssetUrl(asset);
   const [value, setValue] = useState<unknown>();
   const [error, setError] = useState(false);
-  return <div className="mb-output mb-notice"><details><summary>{caption || 'JSON output'}</summary>
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (root.current && (error || value !== undefined)) emitOutputStatus(root.current, { state: error ? 'error' : 'ready' });
+  }, [error, value]);
+  return <div ref={root} className="mb-output mb-notice"><details><summary>{caption || 'JSON output'}</summary>
     {value === undefined && <button type="button" disabled={!url} onClick={async () => {
       if (!url) return;
       try { const response = await fetch(url, { credentials: 'omit' }); if (!response.ok) throw Error('JSON unavailable'); setValue(await response.json() as unknown); setError(false); }

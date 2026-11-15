@@ -12,6 +12,9 @@ describe.each(['0.25.0', '0.25.1', '0.25.2'])('official serializer %s', (version
     expect(document.cells.map((cell) => cell.outputs[0]?.type)).toEqual(['html', 'table', 'tabs', 'accordion', 'layout', 'runtime-required', 'callout', 'statistic', 'json', 'tabs', 'html']);
     expect(document.cells.find((cell) => cell.id === 'slider')?.outputs[0]).toMatchObject({ value: 'Captured setting: 0' });
     expect(document.cells.find((cell) => cell.id === 'stat')?.outputs[0]).toMatchObject({ value: '0', label: 'Count' });
+    const prose = document.cells[0]?.outputs[0];
+    expect(prose?.type === 'html' && prose.html).toContain('<p>');
+    expect(JSON.stringify(document)).not.toContain('class=\\"paragraph');
     expect(document.plainText).toContain('Saved first panel');
     expect(document.plainText).toContain('Stack second');
     const math = document.cells.find((cell) => cell.id === 'math')?.outputs[0];
@@ -56,6 +59,9 @@ describe.skipIf(!process.env.MARIMO_BLOG_AUTHENTIC_HTML)('official marimo HTML e
     expect(sandbox?.type === 'sandbox' && sandbox.asset.endsWith('.txt')).toBe(true);
     expect(document.cells.some((cell) => cell.id === 'Hbol')).toBe(false);
     expect(document.cells.find((cell) => cell.id === 'vblA')?.outputs[0]?.type).toBe('html');
+    const proseHtml = document.cells.flatMap((cell) => cell.outputs).filter((node) => node.type === 'html').map((node) => node.html).join('');
+    expect(proseHtml.match(/<p[ >]/g)!.length).toBeGreaterThan(10);
+    expect(proseHtml).not.toMatch(/class="(?:paragraph|markdown)/);
     expect(Buffer.byteLength(JSON.stringify(document))).toBeLessThan(1024 * 1024);
     expect(document.diagnostics.filter((item) => item.severity === 'error')).toEqual([]);
   });

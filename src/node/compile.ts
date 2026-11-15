@@ -56,7 +56,7 @@ export async function compileSnapshot(input: MarimoSnapshot, options: CompileOpt
     for (const [index, output] of (session?.outputs ?? []).entries()) {
       const outputConfig = override?.outputs?.[String(index)];
       htmlState.cellId = cell.id;
-      const nodes = await compileMime(output, { html: htmlState, assets: assetCollector, diagnostics, cellId: cell.id, outputIndex: index, htmlMode: outputConfig?.html, caption: outputConfig?.caption, alt: outputConfig?.alt, poster: outputConfig?.poster, sandboxScriptUrls: config.sandboxScriptUrls, sandboxAllowEval: outputConfig?.sandboxAllowEval, exporterVersion: snapshot.exporterVersion, adapters: options.adapters });
+      const nodes = await compileMime(output, { html: htmlState, assets: assetCollector, diagnostics, cellId: cell.id, outputIndex: index, htmlMode: outputConfig?.html, htmlRole: outputConfig?.htmlRole, caption: outputConfig?.caption, alt: outputConfig?.alt, poster: outputConfig?.poster, sandboxScriptUrls: config.sandboxScriptUrls, sandboxAllowEval: outputConfig?.sandboxAllowEval, exporterVersion: snapshot.exporterVersion, adapters: options.adapters });
       const rewritten = await assetCollector.rewrite(nodes);
       outputs.push(...rewritten);
       paragraphs.push(...prose(rewritten));

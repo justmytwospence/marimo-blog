@@ -23,7 +23,9 @@ Publication options:
 - `resourceOrigins`: reviewed remote-resource origins. Prefer bundled assets.
 - `sandboxScriptUrls`: exact HTTPS script URLs, not wildcard origins.
 - `cells`: original cell IDs, with `include`, `code`, `allowDiagnostics`, and zero-indexed `outputs`.
-- Output options: `caption`, `alt`, chart `poster`, `html: sanitize | sandbox`, and default-off `sandboxAllowEval` (requires sandbox).
+- Output options: `caption`, `alt`, chart `poster`, `html: sanitize | sandbox`, optional `htmlRole: narrative | result`, and default-off `sandboxAllowEval` (requires sandbox).
+
+`htmlRole` applies only to HTML leaves of that output, including leaves in mixed structures. Unmarked HTML defaults to protected narrative; `result` opts those leaves into result folding. It does not change source eligibility, sanitization or strict diagnostics. Newly marked manifests require an updated reader; older strict readers reject the new HTML role field.
 
 Example of a reviewed exception:
 

@@ -37,10 +37,10 @@ The example is a server component; browser-only hosts can load JSON and call `pa
 - Saved prose, MathML, images, tables, tabs, accordions, carousel panels, callouts, statistics, and JSON trees.
 - Lazy Plotly/Vega specs; figures over 5 MiB require reader action. Table search/sort/download use captured rows only.
 - Python-backed controls show saved values and an explicit notice. Unknown widgets fail strict compilation unless acknowledged for their cell.
-- Reviewed script output runs only in a click-to-load, opaque-origin sandbox. It never executes in the parent page.
+- Reviewed script output loads near the viewport in an opaque-origin sandbox. It never executes in the parent page.
 - Optional official WASM exports open on a separate page. Their packages, data, and runtime still need independent testing.
 
-See the exact [output catalog](docs/outputs.md), [compatibility](docs/compatibility.md), and [security model](docs/security.md). Hiding source is not privacy: review every published output and asset.
+Eligible source folds inline after its cell; published code examples and structured results start expanded. Local native disclosures work without JavaScript. Article-scoped view switches (under the header and in the contents rail) coordinate available categories, show mixed states, and reset to defaults; contents defaults to responsive auto. See the [presentation defaults](docs/react.md), [output catalog](docs/outputs.md), [compatibility](docs/compatibility.md), and [security model](docs/security.md). Folding or hiding source is not privacy: review every published output and asset.
 
 ## Documentation and examples
 

@@ -18,7 +18,7 @@ function safeStyle(value: string): string | undefined {
 }
 function attributes(tag: string, attrs: Record<string, string>): sanitizeHtml.Attributes {
   const result: sanitizeHtml.Attributes = { ...attrs };
-  if (result.class) result.class = result.class.split(/\s+/).filter((name) => /^(?:mb-[a-z0-9-]+|katex(?:-[a-z0-9-]+)?|(?:mord|mop|mrel|mbin|mopen|mclose|mpunct|minner|mspace|vlist|vlist-t|vlist-r|pstrut|strut|base|sizing|reset-size[0-9]*|size[0-9]*|mathnormal|mathit|mathrm|text|textbf|textit|textsf|texttt|delimsizing|delimcenter|nulldelimiter|svg-align|rule|frac-line|sqrt|sqrt-line|accent|accent-body|enclosing|cancel-pad|mfrac|mroot|mstyle|msupsub|mtight|new-line|newline|arraycolsep|arraystretch))$/.test(name)).join(' ');
+  if (result.class) result.class = result.class.split(/\s+/).filter((name) => /^(?:mb-[a-z0-9-]+|language-[a-z0-9_+#-]{1,32}|katex(?:-[a-z0-9-]+)?|(?:mord|mop|mrel|mbin|mopen|mclose|mpunct|minner|mspace|vlist|vlist-t|vlist-r|pstrut|strut|base|sizing|reset-size[0-9]*|size[0-9]*|mathnormal|mathit|mathrm|text|textbf|textit|textsf|texttt|delimsizing|delimcenter|nulldelimiter|svg-align|rule|frac-line|sqrt|sqrt-line|accent|accent-body|enclosing|cancel-pad|mfrac|mroot|mstyle|msupsub|mtight|new-line|newline|arraycolsep|arraystretch))$/.test(name)).join(' ');
   if (result.style) result.style = safeStyle(result.style) ?? '';
   if (tag === 'a') result.rel = 'noopener noreferrer';
   return result;

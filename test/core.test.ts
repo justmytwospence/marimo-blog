@@ -3,6 +3,7 @@ import { importMarimoHtml } from '../src/node/import-html.js';
 import { compileSnapshot } from '../src/node/compile.js';
 import { MarimoBlogError } from '../src/diagnostics.js';
 import { getPlainText, parseDocument } from '../src/index.js';
+import { parseMetadataYaml } from '../src/node/metadata.js';
 
 const notebook = { version: '1', metadata: { marimo_version: '0.25.1' }, cells: [{ id: 'one', code: 'mo.md("# Article")', code_hash: 'hash', name: '_', config: { hide_code: false, disabled: false } }, { id: 'two', code: null, code_hash: null, name: 'second', config: {} }] };
 const session = { version: '1', metadata: { marimo_version: '0.25.1' }, cells: [{ id: 'one', code_hash: 'hash', outputs: [{ type: 'data', data: { 'text/html': '<h1>Article</h1><h2 id="section">Résumé</h2><p>Read <a href="https://example.org">here</a><script>globalThis.pwned=1</script></p>' } }, { type: 'data', data: { 'image/png': 'aGVsbG8=' } }], console: [{ type: 'stream', name: 'stdout', text: 'print output', mimetype: null }] }, { id: 'two', code_hash: null, outputs: [{ type: 'data', data: { 'text/plain': '0' } }], console: [] }] };
@@ -28,6 +29,29 @@ describe('literal marimo export boundary', () => {
     expect([...assets.values()].some((bytes) => Buffer.from(bytes).toString() === 'hello')).toBe(true);
     expect(parseDocument(JSON.parse(JSON.stringify(document)))).toEqual(document);
     expect((globalThis as Record<string, unknown>).pwned).toBeUndefined();
+  });
+  it('applies per-output HTML roles only to nested HTML leaves and retains strict validation', async () => {
+    const snapshot = importMarimoHtml(exportHtml());
+    snapshot.session.cells[0]!.outputs = [
+      { type: 'data', data: { 'text/html': '<div style="display:flex;flex-direction:column"><p>Intro</p><marimo-tabs data-tabs=\'["Panel"]\'><div data-kind="tab"><p>Inside</p></div></marimo-tabs><marimo-plotly data-figure=\'{"data":[]}\'></marimo-plotly></div>' } },
+      { type: 'data', data: { 'text/markdown': '<p>Ordinary prose</p>' } },
+    ];
+    const yaml = `slug: article\ntitle: Article\ndate: 2025-11-25\ndescription: A reading experience.\ncells:\n  one:\n    outputs:\n      '0':\n        htmlRole: result\n      '1':\n        htmlRole: narrative\n`;
+    const metadata = parseMetadataYaml(yaml);
+    const { document } = await compileSnapshot(snapshot, { metadata, assetBase: '/assets' });
+    expect(document.cells[0]!.outputs).toMatchObject([
+      { type: 'layout', children: [{ type: 'html', role: 'result' }, { type: 'tabs', panels: [{ children: [{ type: 'html', role: 'result' }] }] }, { type: 'plotly' }] },
+      { type: 'html', role: 'narrative' },
+    ]);
+    expect(parseDocument(JSON.parse(JSON.stringify(document)))).toEqual(document);
+    const unmarked = await compileSnapshot(snapshot, { metadata: config, assetBase: '/assets' });
+    expect(unmarked.document.cells[0]!.outputs[1]).not.toHaveProperty('role');
+    expect(() => parseMetadataYaml(yaml.replace('htmlRole: result', 'htmlRole: other'))).toThrow(/MB_SCHEMA/);
+    for (const node of [{ type: 'html', html: '<p>Ok</p>', role: 'other' }, { type: 'text', text: 'x', role: 'result' }, { type: 'html', html: '<script>bad()</script>', role: 'result' }]) {
+      expect(() => parseDocument({ ...document, cells: [{ ...document.cells[0], outputs: [node] }] })).toThrow(/MB_SCHEMA/);
+    }
+    snapshot.session.cells[0]!.outputs[0] = { type: 'data', data: { 'text/html': '<p onclick="bad()">Text</p><script>bad()</script>' } };
+    await expect(compileSnapshot(snapshot, { metadata, assetBase: '/assets' })).rejects.toThrow(/MB_SCRIPT_SANDBOX/);
   });
   it('rejects unrendered and string-valued wrappers and executable expression trees', () => {
     expect(() => importMarimoHtml(exportHtml({ mount: 'Object.freeze("{\\"version\\":\\"0.25.1\\"}")' }))).toThrow(MarimoBlogError);

@@ -7,8 +7,26 @@ export interface HtmlContext { cellId: string; title: string; toc: TocEntry[]; u
 function text(node: Node): string { return (node.value ?? '') + (node.childNodes ?? []).map(text).join(''); }
 function slug(value: string): string { return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section'; }
 function unique(value: string, ids: Set<string>): string { let next = value; let n = 2; while (ids.has(next)) next = `${value}-${n++}`; ids.add(next); return next; }
+// Normalize exporter-specific wrappers before sanitization removes their classes.
+export function normalizeMarimoMarkup(html: string): string {
+  const root = parseFragment(html) as unknown as Node;
+  const walk = (node: Node): void => {
+    if (node.tagName === 'span') {
+      const classes = node.attrs?.find((attr) => attr.name === 'class')?.value.split(/\s+/) ?? [];
+      const tag = classes.includes('markdown') ? 'div' : classes.includes('paragraph') ? 'p' : undefined;
+      if (tag) {
+        node.nodeName = tag;
+        node.tagName = tag;
+        node.attrs = node.attrs?.filter((attr) => attr.name !== 'class');
+      }
+    }
+    for (const child of node.childNodes ?? []) walk(child);
+  };
+  walk(root);
+  return serialize(root as never);
+}
 export function compileHtml(html: string, context: HtmlContext): { html: string; plainText: string } {
-  const root = parseFragment(sanitizeOutput(html)) as unknown as Node;
+  const root = parseFragment(sanitizeOutput(normalizeMarimoMarkup(html))) as unknown as Node;
   const referenceMap = new Map<string, string>();
   const walk = (node: Node): void => {
     const tag = node.tagName;

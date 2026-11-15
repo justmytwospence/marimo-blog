@@ -4,7 +4,7 @@
     "slug": "synthetic-showcase",
     "title": "A synthetic showcase",
     "date": "2026-01-01",
-    "description": "A small hand-authored example manifest, not an exported notebook."
+    "description": "An invented reading-room study exploring a small set of daily observations."
   },
   "provenance": {
     "exporterVersion": "synthetic",
@@ -28,7 +28,7 @@
       "outputs": [
         {
           "type": "html",
-          "html": "<h2 id=\"introduction\">Introduction</h2><p>This synthetic document demonstrates saved prose without running Python.</p>"
+          "html": "<h2 id=\"introduction\">Introduction</h2><p>This synthetic document demonstrates saved prose without running Python. Imagine a small team measuring how people use a neighborhood reading room throughout the week. The numbers here are invented, but the questions mirror those in an ordinary exploratory analysis: what changed, how much confidence should we place in it, and what should we look at next?</p><p>A published notebook should let the narrative lead. Readers can follow the argument in order, inspect a captured result when it matters, and return to the underlying source without stepping over code before every paragraph. The measurements below are deliberately modest; they illustrate the shape of an analysis rather than a claim about a real place.</p><h3 id=\"what-we-measured\">What we measured</h3><p>For each of five days, the team recorded the number of visits and the hours the room was open. A daily rate makes the observations easier to compare when opening hours differ. We write the number of visits as <em>n</em> and the open hours as <em>h</em>, so the hourly rate is <em>r</em> = <em>n</em> / <em>h</em>.</p><ul><li>Count visits consistently at the same entrance.</li><li>Record opening hours alongside each daily count.</li><li>Compare rates before drawing conclusions from totals alone.</li></ul>"
         },
         {
           "type": "callout",
@@ -69,7 +69,55 @@
           ]
         }
       ],
-      "consoleOutputs": []
+      "consoleOutputs": [],
+      "source": "import marimo as mo\n\nmo.md(\"A saved introduction to a synthetic study.\")"
+    },
+    {
+      "sourceLanguage": "python",
+      "hideCode": false,
+      "disabled": false,
+      "code": "folded",
+      "console": "collapsed",
+      "consoleOutputs": [
+        { "type": "text", "stream": "stdout", "text": "Reading synthetic observations." },
+        { "type": "text", "stream": "stderr", "text": "One synthetic observation needs review." },
+        { "type": "text", "stream": "stdout", "text": "Finished reading observations." }
+      ],
+      "id": "method",
+      "ordinal": 1,
+      "name": "daily_rates",
+      "source": "visits = [24, 30, 27, 36, 33]\nhours = [6, 6, 6, 8, 6]\nrates = [n / h for n, h in zip(visits, hours)]",
+      "outputs": [
+        {
+          "type": "html",
+          "html": "<h2 id=\"from-counts-to-rates\">From counts to rates</h2><p>The rate for one day is the count divided by the number of hours open. Averaging these daily rates gives each day equal weight; dividing the total visits by total hours answers a slightly different question. Neither summary replaces the individual observations.</p>"
+        },
+        { "type": "code", "language": "python", "code": "rate = visits / hours" },
+        { "type": "callout", "kind": "warning", "children": [ { "type": "html", "html": "<p>Five invented observations are not enough to establish a trend.</p>" } ] },
+        { "type": "error", "name": "ValueError", "message": "Synthetic teaching error", "traceback": [ "ValueError: Synthetic teaching error" ] },
+        {
+          "type": "math",
+          "source": "r_i = n_i / h_i, \\qquad \\bar r = \\frac{1}{5}\\sum_{i=1}^{5} r_i",
+          "html": "<p><em>r</em>ᵢ = <em>n</em>ᵢ / <em>h</em>ᵢ, mean rate = (∑ <em>r</em>ᵢ) / 5</p>",
+          "display": true
+        },
+        {
+          "type": "html",
+          "html": "<h3 id=\"reading-the-summary\">Reading the summary</h3><p>The mean daily rate is 4.7 visits per hour. That single number hides day-to-day variation, and five observations are far too few to establish a trend. A useful next step would be to collect several weeks of comparable observations and note holidays or changes in opening hours.</p><ol><li>Inspect the daily observations for unusual days.</li><li>Compare like with like before interpreting differences.</li><li>Report uncertainty and limitations alongside the summary.</li></ol><p>The small preview below keeps the captured values close to the explanation. In a production article, a larger exported table or interactive figure can add detail without requiring a live notebook kernel.</p><table><thead><tr><th>Day</th><th>Visits</th><th>Hours</th><th>Visits per hour</th></tr></thead><tbody><tr><td>Monday</td><td>24</td><td>6</td><td>4.0</td></tr><tr><td>Tuesday</td><td>30</td><td>6</td><td>5.0</td></tr><tr><td>Wednesday</td><td>27</td><td>6</td><td>4.5</td></tr></tbody></table><p>These invented observations are a starting point, not a finding about a real community. The important result is a reproducible path from the question to the summary, with enough context for another reader to assess the choices made along the way.</p>"
+        }
+      ]
+    }
+    ,{
+      "id": "captured-evidence", "ordinal": 2, "sourceLanguage": "python",
+      "hideCode": false, "disabled": false, "code": "folded", "console": "collapsed",
+      "consoleOutputs": [],
+      "outputs": [
+        { "type": "layout", "layout": "stack", "children": [
+          { "type": "html", "html": "<p>The figure keeps the invented observations alongside this explanation.</p>" },
+          { "type": "plotly", "asset": "/assets/fed5de4c551e267c40e318c124a159a88cffc1b6764b813763461b04698a37a5.json", "alt": "Invented daily visits per hour", "caption": "Five synthetic observations, shown without smoothing or a fitted trend." }
+        ] },
+        { "type": "table", "asset": "/assets/6dedb0f319feaa1014d6b66caef1bb0cd5fc6cb164b4baa2c8c1908dd0862205.json", "caption": "The complete captured synthetic observations.", "preview": { "headers": ["Day", "Visits", "Hours", "Visits per hour"], "rows": [["Monday",24,6,4],["Tuesday",30,6,5],["Wednesday",27,6,4.5],["Thursday",36,8,4.5],["Friday",33,6,5.5]], "totalRows": 5, "download": true } }
+      ]
     }
   ],
   "toc": [
@@ -77,9 +125,29 @@
       "id": "introduction",
       "title": "Introduction",
       "level": 2
+    },
+    {
+      "id": "what-we-measured",
+      "title": "What we measured",
+      "level": 3
+    },
+    {
+      "id": "from-counts-to-rates",
+      "title": "From counts to rates",
+      "level": 2
+    },
+    {
+      "id": "reading-the-summary",
+      "title": "Reading the summary",
+      "level": 3
     }
   ],
-  "plainText": "Introduction. This synthetic document demonstrates saved prose without running Python.",
-  "assets": [],
-  "diagnostics": []
+  "plainText": "Introduction. This synthetic document demonstrates saved prose without running Python. Imagine a small team measuring how people use a neighborhood reading room throughout the week. The numbers are invented. What we measured. For each of five days, the team recorded visits and opening hours. From counts to rates. The rate for one day is the count divided by the number of hours open. Reading the summary. The mean daily rate is 4.7 visits per hour. Five observations are too few to establish a trend. These invented observations are a starting point, not a finding about a real community.",
+  "assets": [
+    { "path": "fed5de4c551e267c40e318c124a159a88cffc1b6764b813763461b04698a37a5.json", "mime": "application/json", "sha256": "fed5de4c551e267c40e318c124a159a88cffc1b6764b813763461b04698a37a5", "bytes": 387 },
+    { "path": "6dedb0f319feaa1014d6b66caef1bb0cd5fc6cb164b4baa2c8c1908dd0862205.json", "mime": "application/json", "sha256": "6dedb0f319feaa1014d6b66caef1bb0cd5fc6cb164b4baa2c8c1908dd0862205", "bytes": 196 }
+  ],
+  "diagnostics": [
+    { "severity": "warning", "code": "MB_OUTPUT_ERROR", "message": "Synthetic teaching error", "remediation": "Acknowledged for cell method by publication config. Fix and re-export, or explicitly allow this teaching error.", "cellId": "method", "outputIndex": 3 }
+  ]
 }

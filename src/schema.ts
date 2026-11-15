@@ -13,7 +13,7 @@ export const metadataSchema = z.strictObject({
 const diagnosticSchema = z.strictObject({ severity: z.enum(['error', 'warning', 'info']), code: z.string(), message: z.string(), remediation: z.string(), cellId: z.string().optional(), outputIndex: z.number().int().nonnegative().optional() });
 const assetSchema = z.strictObject({ path: z.string(), mime: z.string(), sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().nonnegative() });
 const nodeSchema: z.ZodType<import('./types.js').MarimoNode> = z.lazy(() => z.discriminatedUnion('type', [
-  z.strictObject({ type: z.literal('html'), html: z.string() }),
+  z.strictObject({ type: z.literal('html'), html: z.string(), role: z.enum(['narrative', 'result']).optional() }),
   z.strictObject({ type: z.literal('text'), text: z.string(), stream: z.enum(['stdout', 'stderr']).optional() }),
   z.strictObject({ type: z.literal('error'), name: z.string(), message: z.string(), traceback: z.array(z.string()) }),
   z.strictObject({ type: z.literal('image'), src: z.string(), alt: z.string(), caption: z.string().optional() }),

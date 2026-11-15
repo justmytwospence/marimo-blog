@@ -18,6 +18,10 @@
 | Scripted HTML | Strict diagnostic by default; reviewed per-output sandbox opt-in. |
 | Unknown plugins / anywidget / custom ESM | Explicit unsupported diagnostic, never arbitrary custom-element execution. |
 
+Narrative HTML and math remain visible; HTML defaults to narrative unless explicitly marked with `htmlRole: result` in output metadata. Published block-code examples have local folds and start expanded. Structured results start expanded and can be folded without hiding surrounding prose, even in mixed layouts. See the [presentation defaults](react.md).
+
+Captured stdout and stderr retain their order; stderr is labeled as such, not inferred to be a Python warning. Explicit warning and danger callouts have visible summaries with foldable bodies. Error names and messages, unsupported-output notices and runtime-required explanations remain visible. A runtime result failure displays **Result unavailable** in its summary and opens its existing fallback; the indicator persists if folded until recovery. Compiler diagnostics remain build-time validation, not a reader warning stream.
+
 An unrecognized composition fails rather than dropping textless sibling charts or images. Use supported stacks/panels, split the output, or implement a reviewed adapter. Python-backed selections and row fetches are never simulated.
 
 ## Build-time adapters
@@ -40,3 +44,5 @@ Names must be unique and versions explicit. Matching adapters run before built-i
 ## Diagnostics
 
 Strict compilation rejects unacknowledged output errors, script removal and unsupported content. `cells.<id>.allowDiagnostics` acknowledges only selected codes for that cell. This is an editorial decision, not proof of output fidelity. Unknown cell IDs and output indexes are errors.
+
+Empty plain-text results (for example the value of a cell that returns nothing) are omitted from the artifact.

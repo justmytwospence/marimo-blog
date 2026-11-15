@@ -1,7 +1,6 @@
 'use client';
 
 export { ArticleControls } from './ArticleControls.js';
-export { CodeBlock } from './CodeBlock.js';
 export { TableOfContents } from './TableOfContents.js';
 export { Tabs } from './Tabs.js';
 export { Accordion } from './Accordion.js';

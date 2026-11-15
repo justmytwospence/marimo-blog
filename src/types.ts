@@ -34,7 +34,7 @@ export interface InteractiveDescriptor {
 }
 
 export type MarimoNode =
-  | { type: 'html'; html: string }
+  | { type: 'html'; html: string; role?: 'narrative' | 'result' }
   | { type: 'text'; text: string; stream?: 'stdout' | 'stderr' }
   | { type: 'error'; name: string; message: string; traceback: string[] }
   | { type: 'image'; src: string; alt: string; caption?: string }
