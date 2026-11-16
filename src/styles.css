@@ -6,6 +6,7 @@
   --_mb-code-bg: #f2f4f6;
   --_mb-code-text: #24292f; --_mb-syntax-keyword: #cf222e; --_mb-syntax-string: #0a3069; --_mb-syntax-number: #0550ae; --_mb-syntax-comment: #6e7781; --_mb-syntax-function: #8250df; --_mb-syntax-type: #953800; --_mb-syntax-variable: #24292f; --_mb-syntax-meta: #6639ba;
   --_mb-surface: #f8f9fa;
+  --_mb-success: #067647; --_mb-warning: #b54708; --_mb-danger: #d92d20;
   color: var(--mb-text, var(--_mb-text));
   background: var(--mb-bg, transparent);
   font-family: var(--mb-font-body, inherit);
@@ -20,12 +21,14 @@
   .marimo-blog[data-theme='auto']:not(.light *) {
     --_mb-text: #e9ebee; --_mb-muted: #b6c0cb; --_mb-border: #4a5563;
     --_mb-accent: #9ccaff; --_mb-code-bg: #242a33; --_mb-surface: #20262e;
+    --_mb-success: #47cd89; --_mb-warning: #fdb022; --_mb-danger: #f97066;
     --_mb-code-text: #e6edf3; --_mb-syntax-keyword: #ff7b72; --_mb-syntax-string: #a5d6ff; --_mb-syntax-number: #79c0ff; --_mb-syntax-comment: #8b949e; --_mb-syntax-function: #d2a8ff; --_mb-syntax-type: #ffa657; --_mb-syntax-variable: #e6edf3; --_mb-syntax-meta: #d2a8ff;
   }
 }
 .marimo-blog[data-theme='dark'], .dark .marimo-blog[data-theme='auto'] {
   --_mb-text: #e9ebee; --_mb-muted: #b6c0cb; --_mb-border: #4a5563;
   --_mb-accent: #9ccaff; --_mb-code-bg: #242a33; --_mb-surface: #20262e;
+    --_mb-success: #47cd89; --_mb-warning: #fdb022; --_mb-danger: #f97066;
     --_mb-code-text: #e6edf3; --_mb-syntax-keyword: #ff7b72; --_mb-syntax-string: #a5d6ff; --_mb-syntax-number: #79c0ff; --_mb-syntax-comment: #8b949e; --_mb-syntax-function: #d2a8ff; --_mb-syntax-type: #ffa657; --_mb-syntax-variable: #e6edf3; --_mb-syntax-meta: #d2a8ff;
 }
 .marimo-blog *, .marimo-blog *::before, .marimo-blog *::after { box-sizing: border-box; }
@@ -78,6 +81,17 @@
 .marimo-blog .mb-tab-list[hidden] { display: none; }
 .marimo-blog :is(.mb-panel, .mb-notice) { border: 1px solid var(--mb-border, var(--_mb-border)); border-radius: var(--mb-radius, .75rem); padding: 1rem; }
 .marimo-blog .mb-notice { background: var(--mb-surface, var(--_mb-surface)); }
+.marimo-blog .mb-callout { --_mb-tone: var(--mb-accent, var(--_mb-accent)); width: 100%; max-width: var(--mb-prose-width, 42rem); margin: 1.25rem auto; padding: .75rem 1rem; border: 1px solid var(--mb-border, var(--_mb-border)); border-inline-start: 4px solid var(--_mb-tone); border-radius: min(var(--mb-radius, .75rem), .5rem); background: color-mix(in srgb, var(--_mb-tone) 7%, transparent); }
+.marimo-blog .mb-callout-tip { --_mb-tone: var(--mb-success, var(--_mb-success)); }
+.marimo-blog .mb-callout-warning { --_mb-tone: var(--mb-warning, var(--_mb-warning)); }
+.marimo-blog .mb-callout-danger { --_mb-tone: var(--mb-danger, var(--_mb-danger)); }
+.marimo-blog .mb-callout-title { margin: 0 0 .25rem; font: 650 .9375rem/1.5 var(--mb-font-ui, inherit); color: var(--mb-text, var(--_mb-text)); }
+.marimo-blog .mb-callout > :last-child, .marimo-blog .mb-callout .mb-prose > :last-child { margin-bottom: 0; }
+.marimo-blog .mb-callout .mb-prose { max-width: none; margin: 0; }
+.marimo-blog .mb-task-list { list-style: none; padding-inline-start: .25rem; }
+.marimo-blog .mb-task-box { display: inline-block; width: .95em; height: .95em; margin-inline-end: .45em; vertical-align: -.12em; border: 1.5px solid var(--mb-muted, var(--_mb-muted)); border-radius: .2em; }
+.marimo-blog .mb-task-checked { background: var(--mb-accent, var(--_mb-accent)); border-color: var(--mb-accent, var(--_mb-accent)); }
+.marimo-blog .mb-task-checked::after { content: ''; display: block; width: .28em; height: .52em; margin: .04em auto 0; border: solid #fff; border-width: 0 .14em .14em 0; transform: rotate(45deg); }
 .marimo-blog summary { cursor: pointer; }
 /* Reader disclosures: compact summaries, never toolbars. */
 .marimo-blog .mb-disclosure { margin-block: .5rem; }
@@ -91,18 +105,18 @@
 .marimo-blog .mb-disclosure:not([open]) > summary { border-color: var(--mb-border, var(--_mb-border)); background: var(--mb-surface, var(--_mb-surface)); color: var(--mb-text, var(--_mb-text)); }
 .marimo-blog .mb-disclosure:not([open]) > summary:hover { border-color: color-mix(in srgb, var(--mb-accent, var(--_mb-accent)) 45%, var(--mb-border, var(--_mb-border))); }
 .marimo-blog .mb-disclosure-label { font-weight: 600; white-space: nowrap; }
-.marimo-blog .mb-disclosure-dot { flex: none; width: .5rem; height: .5rem; border-radius: 50%; background: #f79009; }
+.marimo-blog .mb-disclosure-dot { flex: none; width: .5rem; height: .5rem; border-radius: 50%; background: var(--mb-warning, var(--_mb-warning)); }
 .marimo-blog .mb-disclosure > summary:hover { color: var(--mb-text, var(--_mb-text)); }
 .marimo-blog .mb-disclosure[open] > summary .mb-disclosure-preview { display: none; }
 .marimo-blog .mb-disclosure-preview { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--mb-muted, var(--_mb-muted)); }
-.marimo-blog .mb-disclosure-status { color: var(--mb-text, var(--_mb-text)); font-weight: 600; border-inline-start: 3px solid #d92d20; padding-inline-start: .4rem; }
+.marimo-blog .mb-disclosure-status { color: var(--mb-text, var(--_mb-text)); font-weight: 600; border-inline-start: 3px solid var(--mb-danger, var(--_mb-danger)); padding-inline-start: .4rem; }
 .marimo-blog .mb-disclosure-body > .mb-output:first-child { margin-top: .25rem; }
 .marimo-blog :is(.mb-disclosure-source, .mb-disclosure-log, .mb-disclosure-stderr, .mb-disclosure-warning, .mb-disclosure-example, .mb-code-example, .mb-disclosure-result:not(:has(.mb-figure))) { max-width: var(--mb-prose-width, 42rem); margin-inline: auto; }
 /* Warnings stay legible in both themes: a marker, not a low-contrast hue. */
 .marimo-blog :is(.mb-disclosure-stderr, .mb-disclosure-warning) > summary { color: var(--mb-text, var(--_mb-text)); }
 .marimo-blog .mb-error .mb-disclosure, .marimo-blog .mb-warning .mb-disclosure { max-width: none; }
 .marimo-blog :is(.mb-error, .mb-warning) .mb-disclosure > summary { max-width: none; }
-.marimo-blog .mb-error { border-color: #d92d20; }
+.marimo-blog .mb-error { border-color: var(--mb-danger, var(--_mb-danger)); }
 /* View switches: always-visible labeled switches over the native disclosures. */
 .marimo-blog .mb-switches:not([data-ready]) { display: none; }
 .marimo-blog .mb-switches-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1.25rem; font: .875rem/1.4 var(--mb-font-ui, inherit); }

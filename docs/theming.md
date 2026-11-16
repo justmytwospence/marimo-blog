@@ -35,7 +35,7 @@ For example, set tokens on a host-owned ancestor:
 }
 ```
 
-Other inputs include `--mb-code-text` and the syntax colours `--mb-syntax-keyword`, `--mb-syntax-string`, `--mb-syntax-number`, `--mb-syntax-comment`, `--mb-syntax-function`, `--mb-syntax-type`, `--mb-syntax-variable` and `--mb-syntax-meta` (map them per host theme), `--mb-bg`, `--mb-body-size`, `--mb-line-height`, `--mb-radius`, `--mb-prose-width`, `--mb-max-width`, and `--mb-space`. `--mb-code-font` remains a compatibility fallback for `--mb-font-code`. Set `--mb-bg` only when the article needs its own canvas.
+Other inputs include `--mb-code-text` and the syntax colours `--mb-syntax-keyword`, `--mb-syntax-string`, `--mb-syntax-number`, `--mb-syntax-comment`, `--mb-syntax-function`, `--mb-syntax-type`, `--mb-syntax-variable` and `--mb-syntax-meta` (map them per host theme), the status colours `--mb-success`, `--mb-warning` and `--mb-danger` (callouts, stderr dot, errors), `--mb-bg`, `--mb-body-size`, `--mb-line-height`, `--mb-radius`, `--mb-prose-width`, `--mb-max-width`, and `--mb-space`. `--mb-code-font` remains a compatibility fallback for `--mb-font-code`. Set `--mb-bg` only when the article needs its own canvas.
 
 Code block button icons are CSS masks using `data:` SVG URLs, so a host Content-Security-Policy must allow `img-src data:` for them; the button labels still work if they are blocked.
 

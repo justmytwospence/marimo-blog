@@ -4,6 +4,7 @@ import { compileSnapshot } from '../src/node/compile.js';
 import { MarimoBlogError } from '../src/diagnostics.js';
 import { getPlainText, parseDocument } from '../src/index.js';
 import { parseMetadataYaml } from '../src/node/metadata.js';
+import { compileHtml, normalizeMarimoMarkup } from '../src/node/html.js';
 
 const notebook = { version: '1', metadata: { marimo_version: '0.25.1' }, cells: [{ id: 'one', code: 'mo.md("# Article")', code_hash: 'hash', name: '_', config: { hide_code: false, disabled: false } }, { id: 'two', code: null, code_hash: null, name: 'second', config: {} }] };
 const session = { version: '1', metadata: { marimo_version: '0.25.1' }, cells: [{ id: 'one', code_hash: 'hash', outputs: [{ type: 'data', data: { 'text/html': '<h1>Article</h1><h2 id="section">Résumé</h2><p>Read <a href="https://example.org">here</a><script>globalThis.pwned=1</script></p>' } }, { type: 'data', data: { 'image/png': 'aGVsbG8=' } }], console: [{ type: 'stream', name: 'stdout', text: 'print output', mimetype: null }] }, { id: 'two', code_hash: null, outputs: [{ type: 'data', data: { 'text/plain': '0' } }], console: [] }] };
@@ -128,5 +129,17 @@ describe('literal marimo export boundary', () => {
     expect(document.sourceDownload).toBeUndefined();
     expect(document.cells[0]?.source).toBeUndefined();
     expect(() => parseDocument({ ...document, cells: [{ ...document.cells[0], outputs: [{ type: 'html', html: '<img src=x onerror="alert(1)">' }] }] })).toThrow(/MB_SCHEMA/);
+  });
+  it('maps marimo admonitions and task lists to inert, styled markup', () => {
+    const marimo = '<span class="markdown prose dark:prose-invert contents"><div class="admonition warning">\n<span class="admonition-title">Careful</span>\n<span class="paragraph">body</span>\n</div><ul class="task-list">\n<li class="task-list-item"><input type="checkbox" disabled checked/> done</li>\n<li class="task-list-item"><input type="checkbox" disabled/> todo</li>\n</ul></span>';
+    const { html } = compileHtml(marimo, { cellId: 'c', title: 'x', toc: [], usedIds: new Set(), consumedTitle: true });
+    expect(html).toContain('class="mb-callout mb-callout-warning" role="note"');
+    expect(html).toContain('<p class="mb-callout-title">Careful</p>');
+    expect(html).toContain('class="mb-task-list"');
+    expect(html).toContain('class="mb-task-box mb-task-checked"');
+    expect(html).toContain('Done: ');
+    expect(html).toContain('Not done: ');
+    expect(html).not.toContain('<input');
+    expect(normalizeMarimoMarkup(html)).toBe(html);
   });
 });

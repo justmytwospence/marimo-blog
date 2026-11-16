@@ -8,6 +8,7 @@
 | hstack / vstack | Responsive horizontal / vertical layouts preserving child order. |
 | Tabs / accordion / carousel | Captured panels only. Carousel slides become labeled tabs. No-JS fallback includes every panel. |
 | Callout / statistic / JSON / tree | Captured content, including zero and false. JSON/tree payloads load on reader action. |
+| Markdown admonitions / task lists | marimo `///` admonitions become styled callouts (note, tip, warning, danger); task items keep their done/not-done state as a drawn box with screen-reader text. |
 | Raster images / SVG | Content-addressed assets. SVG has a conservative element/attribute allowlist. Inert extras (metadata, stylesheets, classes, links) are removed with an `MB_SVG_SANITIZED` warning; active elements, event handlers and external references fail the build. Export PNG when an SVG needs unsupported styling. |
 | Audio / video | Native controls for bundled supported media. |
 | HTML dataframes | Static table semantics, including colspan/rowspan. |

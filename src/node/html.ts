@@ -1,8 +1,9 @@
 import { parseFragment, serialize } from 'parse5';
 import { sanitizeOutput } from './sanitize.js';
 import type { TocEntry } from '../types.js';
+import { calloutStyle } from '../shared/callout.js';
 
-type Node = { nodeName: string; tagName?: string; value?: string; childNodes?: Node[]; attrs?: { name: string; value: string }[] };
+type Node = { nodeName: string; tagName?: string; value?: string; parentNode?: Node | null; childNodes?: Node[]; attrs?: { name: string; value: string }[] };
 export interface HtmlContext { cellId: string; title: string; toc: TocEntry[]; usedIds: Set<string>; consumedTitle: boolean; headingShift?: number }
 function text(node: Node): string { return (node.value ?? '') + (node.childNodes ?? []).map(text).join(''); }
 function slug(value: string): string { return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section'; }
@@ -10,15 +11,35 @@ function unique(value: string, ids: Set<string>): string { let next = value; let
 // Normalize exporter-specific wrappers before sanitization removes their classes.
 export function normalizeMarimoMarkup(html: string): string {
   const root = parseFragment(html) as unknown as Node;
+  const classesOf = (node: Node): string[] => node.attrs?.find((attr) => attr.name === 'class')?.value.split(/\s+/).filter(Boolean) ?? [];
+  const retag = (node: Node, tag: string, classes: string): void => {
+    node.nodeName = tag; node.tagName = tag;
+    node.attrs = [...(node.attrs ?? []).filter((attr) => attr.name !== 'class'), { name: 'class', value: classes }];
+  };
   const walk = (node: Node): void => {
+    const classes = classesOf(node);
     if (node.tagName === 'span') {
-      const classes = node.attrs?.find((attr) => attr.name === 'class')?.value.split(/\s+/) ?? [];
       const tag = classes.includes('markdown') ? 'div' : classes.includes('paragraph') ? 'p' : undefined;
       if (tag) {
         node.nodeName = tag;
         node.tagName = tag;
         node.attrs = node.attrs?.filter((attr) => attr.name !== 'class');
       }
+    } else if (node.tagName === 'div' && classes.includes('admonition')) {
+      const { tone } = calloutStyle(classes.find((name) => name !== 'admonition') ?? '');
+      node.attrs = [{ name: 'class', value: `mb-callout mb-callout-${tone}` }, { name: 'role', value: 'note' }];
+      for (const child of node.childNodes ?? []) if (child.tagName === 'span' && classesOf(child).includes('admonition-title')) retag(child, 'p', 'mb-callout-title');
+    } else if (node.tagName === 'ul' && classes.includes('task-list')) {
+      retag(node, 'ul', 'mb-task-list');
+    } else if (node.tagName === 'li' && classes.includes('task-list-item')) {
+      retag(node, 'li', 'mb-task-item');
+      node.childNodes = (node.childNodes ?? []).flatMap((child) => {
+        if (child.tagName !== 'input' || child.attrs?.find((attr) => attr.name === 'type')?.value !== 'checkbox') return [child];
+        const checked = child.attrs.some((attr) => attr.name === 'checked');
+        const replacement = (parseFragment(`<span class="mb-task-box${checked ? ' mb-task-checked' : ''}"></span><span class="mb-sr-only">${checked ? 'Done: ' : 'Not done: '}</span>`) as unknown as Node).childNodes ?? [];
+        for (const item of replacement) item.parentNode = node;
+        return replacement;
+      });
     }
     for (const child of node.childNodes ?? []) walk(child);
   };
