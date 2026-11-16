@@ -12,6 +12,7 @@ export const metadataSchema = z.strictObject({
   authors: z.array(z.string()).optional(), tags: z.array(z.string()).optional(),
   draft: z.boolean().optional(), featured: z.boolean().optional(), language: z.string().optional(),
   sourceUrl: z.url().startsWith('https://').optional(),
+  extra: z.record(z.string().regex(/^[A-Za-z][A-Za-z0-9_-]*$/), z.json()).optional(),
 });
 const diagnosticSchema = z.strictObject({ severity: z.enum(['error', 'warning', 'info']), code: z.string(), message: z.string(), remediation: z.string(), cellId: z.string().optional(), outputIndex: z.number().int().nonnegative().optional() });
 const assetSchema = z.strictObject({ path: z.string(), mime: z.string(), sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().nonnegative() });

@@ -10,4 +10,11 @@ describe('publication config hash', () => {
     const reversed = { ...base, cells: { Z: {}, a: { include: false }, B: { code: 'visible' }, b: { include: false } } } as PublicationConfig;
     expect(hashPublicationConfig(reversed)).toBe(hashPublicationConfig(config));
   });
+
+  it('keeps host extra metadata and hashes it', () => {
+    const config = parseMetadataYaml(`slug: golden\ntitle: Golden\ndate: "2025-01-01"\ndescription: d\nextra:\n  bluesky: https://bsky.app/profile/x/post/y\n  nested: { a: [1, true, null] }\n`);
+    expect(config.extra).toEqual({ bluesky: 'https://bsky.app/profile/x/post/y', nested: { a: [1, true, null] } });
+    expect(hashPublicationConfig(config)).not.toBe(hashPublicationConfig({ ...config, extra: { bluesky: 'other' } }));
+    expect(() => parseMetadataYaml(`slug: golden\ntitle: Golden\ndate: "2025-01-01"\ndescription: d\nextra:\n  1bad: 1\n`)).toThrow(/MB_SCHEMA/);
+  });
 });

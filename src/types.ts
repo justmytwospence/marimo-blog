@@ -1,3 +1,4 @@
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 export interface MarimoMetadata {
   slug: string;
   title: string;
@@ -9,6 +10,8 @@ export interface MarimoMetadata {
   featured?: boolean;
   language?: string;
   sourceUrl?: string;
+  /** Host-owned fields, stored and hashed but never interpreted. */
+  extra?: Record<string, JsonValue>;
 }
 
 export interface MarimoDiagnostic {

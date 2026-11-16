@@ -166,4 +166,9 @@ describe('literal marimo export boundary', () => {
     const { document } = await compileSnapshot(importMarimoHtml(exportHtml()), { metadata: { ...config, cells: { one: { allowDiagnostics: ['MB_SCRIPT_SANDBOX'] } } }, assetBase: '/notebooks/article/assets' });
     expect(document.provenance.producerVersion).toBe((JSON.parse(readFileSync('package.json', 'utf8')) as { version: string }).version);
   });
+  it('carries host extra metadata onto the document', async () => {
+    const { document } = await compileSnapshot(importMarimoHtml(exportHtml()), { metadata: { ...config, extra: { bluesky: 'https://bsky.app/profile/x/post/y' }, cells: { one: { allowDiagnostics: ['MB_SCRIPT_SANDBOX'] } } }, assetBase: '/notebooks/article/assets' });
+    expect(document.metadata.extra).toEqual({ bluesky: 'https://bsky.app/profile/x/post/y' });
+    expect(parseDocument(JSON.parse(JSON.stringify(document))).metadata.extra).toEqual(document.metadata.extra);
+  });
 });

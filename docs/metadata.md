@@ -13,7 +13,7 @@ code: folded
 console: collapsed
 ```
 
-Required: `slug`, `title`, ISO calendar `date`, `description`. Slugs are lowercase ASCII words separated by hyphens. Optional metadata: `authors`, `tags`, `draft`, `featured`, `language`, HTTPS `sourceUrl`. Unknown keys fail validation; dates are never invented.
+Required: `slug`, `title`, ISO calendar `date`, `description`. Slugs are lowercase ASCII words separated by hyphens. Optional metadata: `authors`, `tags`, `draft`, `featured`, `language`, HTTPS `sourceUrl`. `extra` is a JSON object for host-specific fields (for example a comments thread URL); marimo-blog stores and hashes it but never reads it. Other unknown keys fail validation; dates are never invented.
 
 Publication options:
 
