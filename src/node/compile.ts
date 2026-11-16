@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { parseFragment } from 'parse5';
 import type { InteractiveDescriptor, MarimoDocument, MarimoDiagnostic, MarimoMetadata, MarimoNode } from '../types.js';
-import { MarimoBlogError, fail } from '../diagnostics.js';
+import { MarimoBlogError, diagnostic, fail } from '../diagnostics.js';
 import { parseDocument, metadataSchema } from '../schema.js';
 import { AssetCollector } from './assets.js';
 import { compileMime, type OutputAdapter } from './mime.js';
@@ -26,6 +26,15 @@ function prose(nodes: MarimoNode[]): string[] {
     if (node.type === 'tabs' || node.type === 'accordion') return node.panels.flatMap((panel) => [panel.title, ...prose(panel.children)]);
     if ('caption' in node && node.caption) return [node.caption];
     return [];
+  });
+}
+/** Figures need alt text or a caption to be understood without sight. */
+function missingAlt(nodes: MarimoNode[]): boolean {
+  return nodes.some((node): boolean => {
+    if (node.type === 'image' || node.type === 'plotly' || node.type === 'vega' || node.type === 'sandbox') return !node.alt?.trim() && !node.caption?.trim();
+    if (node.type === 'layout' || node.type === 'callout') return missingAlt(node.children);
+    if (node.type === 'tabs' || node.type === 'accordion') return node.panels.some((panel) => missingAlt(panel.children));
+    return false;
   });
 }
 export async function compileSnapshot(input: MarimoSnapshot, options: CompileOptions): Promise<BuildResult> {
@@ -58,6 +67,7 @@ export async function compileSnapshot(input: MarimoSnapshot, options: CompileOpt
       htmlState.cellId = cell.id;
       const nodes = await compileMime(output, { html: htmlState, assets: assetCollector, diagnostics, cellId: cell.id, outputIndex: index, htmlMode: outputConfig?.html, htmlRole: outputConfig?.htmlRole, caption: outputConfig?.caption, alt: outputConfig?.alt, poster: outputConfig?.poster, sandboxScriptUrls: config.sandboxScriptUrls, sandboxAllowEval: outputConfig?.sandboxAllowEval, exporterVersion: snapshot.exporterVersion, adapters: options.adapters });
       const rewritten = await assetCollector.rewrite(nodes);
+      if (missingAlt(rewritten)) diagnostics.push({ ...diagnostic('MB_ALT_MISSING', 'Figure has no alt text or caption', `Add alt (and ideally caption) under cells.${cell.id}.outputs."${index}" in the publication YAML.`, cell.id, index), severity: 'warning' });
       outputs.push(...rewritten);
       paragraphs.push(...prose(rewritten));
     }

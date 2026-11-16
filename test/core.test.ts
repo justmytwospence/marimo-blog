@@ -142,4 +142,12 @@ describe('literal marimo export boundary', () => {
     expect(html).not.toContain('<input');
     expect(normalizeMarimoMarkup(html)).toBe(html);
   });
+  it('warns about figures without alt text or caption', async () => {
+    const snapshot = importMarimoHtml(exportHtml());
+    const base = { ...config, cells: { one: { allowDiagnostics: ['MB_SCRIPT_SANDBOX'] } } };
+    const { document } = await compileSnapshot(snapshot, { metadata: base, assetBase: '/notebooks/article/assets' });
+    expect(document.diagnostics).toContainEqual(expect.objectContaining({ code: 'MB_ALT_MISSING', severity: 'warning', cellId: 'one', outputIndex: 1 }));
+    const described = await compileSnapshot(snapshot, { metadata: { ...base, cells: { one: { ...base.cells.one, outputs: { '1': { alt: 'A figure' } } } } }, assetBase: '/notebooks/article/assets' });
+    expect(described.document.diagnostics.some((item) => item.code === 'MB_ALT_MISSING')).toBe(false);
+  });
 });

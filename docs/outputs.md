@@ -47,3 +47,5 @@ Names must be unique and versions explicit. Matching adapters run before built-i
 Strict compilation rejects unacknowledged output errors, script removal and unsupported content. `cells.<id>.allowDiagnostics` acknowledges only selected codes for that cell. This is an editorial decision, not proof of output fidelity. Unknown cell IDs and output indexes are errors.
 
 Empty plain-text results (for example the value of a cell that returns nothing) are omitted from the artifact.
+
+Warnings never fail a build: `MB_ALT_MISSING` (figure without alt text or caption), `MB_SVG_SANITIZED`, `MB_TRUNCATED_TABLE`, `MB_RUNTIME_REQUIRED` and `MB_SCRIPT_SANDBOX`. `marimo-blog build` and `check` print them.

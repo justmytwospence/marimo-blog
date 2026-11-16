@@ -4,7 +4,7 @@ import { resolve, relative } from 'node:path';
 import { MarimoBlogError } from './index.js';
 import { importMarimoHtml, compileSnapshot, readDocument, verifyBuild, writeBuild, parseMetadataYaml, hashPublicationConfig, inspectWasm, importWasm } from './node/index.js';
 import type { WasmInventory } from './node/index.js';
-import type { InteractiveDescriptor } from './types.js';
+import type { InteractiveDescriptor, MarimoDiagnostic } from './types.js';
 
 const usage = 'Usage: marimo-blog inspect <export.html> [--json] | build <export.html> --metadata <post.yaml> --out <post.marimo.json> --assets <directory> --asset-base <URL-path> [--public-dir <directory>] [--interactive <interactive.json>] | check <post.marimo.json> --assets <directory> --asset-base <URL-path> [--metadata <post.yaml>] | inspect-wasm <directory> --json | import-wasm <directory> --inventory <reviewed.json> --out <directory> --base-url <URL-path>';
 function parseArgs(args: string[]): { command: string; target: string; flags: Record<string, string | boolean> } {
@@ -22,6 +22,10 @@ function parseArgs(args: string[]): { command: string; target: string; flags: Re
   if (Object.keys(flags).some((key) => !expected.includes(key))) throw Error(usage);
   if ((command === 'build' && !['--metadata', '--out', '--assets', '--asset-base'].every((key) => typeof flags[key] === 'string')) || (command === 'check' && !['--assets', '--asset-base'].every((key) => typeof flags[key] === 'string')) || (command === 'import-wasm' && !['--inventory', '--out', '--base-url'].every((key) => typeof flags[key] === 'string'))) throw Error(usage);
   return { command, target, flags };
+}
+function formatDiagnostic(item: MarimoDiagnostic): string {
+  const where = item.cellId ? ` (cell ${item.cellId}${item.outputIndex !== undefined ? `, output ${item.outputIndex}` : ''})` : '';
+  return `${item.severity} ${item.code}${where}: ${item.message}`;
 }
 async function main(): Promise<void> {
   let parsed;
@@ -47,6 +51,7 @@ async function main(): Promise<void> {
       const result = await compileSnapshot(snapshot, { metadata, assetBase: flags['--asset-base'] as string, ...(flags['--public-dir'] ? { publicDir: flags['--public-dir'] as string } : {}), ...(interactive ? { interactive } : {}) });
       const ownerId = relative(process.cwd(), resolve(flags['--out'] as string)).replaceAll('\\', '/');
       await writeBuild(result, { documentPath: flags['--out'] as string, assetsDir: flags['--assets'] as string, ownerId });
+      for (const item of result.document.diagnostics) console.error(formatDiagnostic(item));
       console.log(`Wrote ${result.document.cells.length} cells, ${result.document.assets.length} assets; owner ${ownerId}`);
     } else {
       const document = await readDocument(target);
@@ -56,7 +61,7 @@ async function main(): Promise<void> {
         const config = parseMetadataYaml(await readFile(flags['--metadata'] as string, 'utf8'));
         if (hashPublicationConfig(config) !== document.provenance.publicationConfigSha256) diagnostics.push({ severity: 'error', code: 'MB_STALE_CONFIG', message: 'Publication metadata changed since build', remediation: 'Rebuild the export with the new YAML.' });
       }
-      for (const item of diagnostics) console.error(`${item.severity} ${item.code}: ${item.message}`);
+      for (const item of [...document.diagnostics, ...diagnostics]) console.error(formatDiagnostic(item));
       if (diagnostics.some((item) => item.severity === 'error')) process.exitCode = 1;
       else console.log(`Valid publication: ${document.metadata.slug}`);
     }
