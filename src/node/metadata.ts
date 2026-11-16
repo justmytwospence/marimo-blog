@@ -18,7 +18,7 @@ export function parseMetadataYaml(text: string): PublicationConfig {
 }
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
-  if (value && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, val]) => `${JSON.stringify(key)}:${canonical(val)}`).join(',')}}`;
+  if (value && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([key, val]) => `${JSON.stringify(key)}:${canonical(val)}`).join(',')}}`;
   return JSON.stringify(value);
 }
 export function hashPublicationConfig(config: PublicationConfig, linkedFileDigests: Record<string, string> = {}): string {
