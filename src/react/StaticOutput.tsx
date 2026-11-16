@@ -13,7 +13,8 @@ import { FigureFrame } from '../client/FigureFrame.js';
 import { Disclosure } from '../client/Disclosure.js';
 import { HtmlOutput } from './HtmlOutput.js';
 import { safeAssetUrl } from './safety.js';
-import { containsProtectedNotice, isEmptyResult, isWarningCallout, presentationRuns, resolvePresentation, warningBodyRuns, warningLabel, type MarimoPresentationOptions, type ResolvedPresentation } from './presentation.js';
+import { isEmptyResult, presentationRuns, resolvePresentation, type MarimoPresentationOptions, type ResolvedPresentation } from './presentation.js';
+import { calloutStyle } from '../shared/callout.js';
 
 interface OutputProps { presentation?: MarimoPresentationOptions; qualifier?: string }
 const sr = (qualifier?: string) => qualifier ? <span className="mb-sr-only"> — {qualifier}</span> : null;
@@ -98,13 +99,8 @@ export function StaticOutput({ node, presentation, qualifier }: OutputProps & { 
     case 'tabs': return <Tabs panels={node.panels.map((panel) => ({ title: panel.title, content: sequence(panel.children) }))} />;
     case 'accordion': return <Accordion panels={node.panels.map((panel) => ({ title: panel.title, content: sequence(panel.children) }))} />;
     case 'callout': {
-      if (!isWarningCallout(node)) return <aside className="mb-output mb-notice"><strong>{node.kind}</strong>{sequence(node.children)}</aside>;
-      const label = warningLabel(node);
-      if (!containsProtectedNotice(node)) return <Disclosure kind="warnings" variant="warning" defaultOpen={settings.warnings === 'expanded'} label={<>{label}{sr(qualifier)}</>}>{sequence(node.children)}</Disclosure>;
-      // A protected failure inside a warning stays visible in its original position.
-      return <aside className="mb-output mb-notice mb-warning"><strong>{label}</strong>{warningBodyRuns(node.children).map((run, index) => run.protected
-        ? <div key={index}>{sequence(run.nodes)}</div>
-        : <Disclosure key={index} kind="warnings" variant="warning" defaultOpen={settings.warnings === 'expanded'} label={<>{label} details{sr(qualifier)}</>}>{sequence(run.nodes)}</Disclosure>)}</aside>;
+      const { tone, title } = calloutStyle(node.kind);
+      return <aside className={`mb-output mb-callout mb-callout-${tone}`} role="note"><p className="mb-callout-title">{title}</p>{sequence(node.children)}</aside>;
     }
     case 'runtime-required': return <aside className="mb-output mb-notice"><strong>{node.value}</strong><p>{node.message || 'This control needs Python. Showing the exported value.'}</p></aside>;
     case 'unsupported': return <aside className="mb-output mb-notice" role="note"><strong>Output unavailable</strong><p>{node.message}</p><small>{node.mime}</small></aside>;

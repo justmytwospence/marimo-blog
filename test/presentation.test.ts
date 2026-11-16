@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MarimoCell, MarimoDocument, MarimoNode } from '../src/types.js';
-import { classifyNode, containsProtectedNotice, getPresentationInventory, presentationRuns, resolvePresentation, sourceVisibility, warningBodyRuns } from '../src/react/presentation.js';
+import { classifyNode, getPresentationInventory, presentationRuns, resolvePresentation, sourceVisibility } from '../src/react/presentation.js';
 
 const cell = (overrides: Partial<MarimoCell> = {}): MarimoCell => ({ id: 'a', ordinal: 0, source: 'x = 1', sourceLanguage: 'python', hideCode: false, disabled: false, code: 'folded', console: 'collapsed', outputs: [], consoleOutputs: [], ...overrides });
 const doc = (cells: MarimoCell[]): MarimoDocument => ({
@@ -24,12 +24,13 @@ describe('presentation contract', () => {
     expect(classifyNode({ type: 'callout', kind: 'info', children: [] })).toBe('mixed');
   });
 
-  it('keeps protected notices out of a single closed warning wrapper', () => {
+  it('treats authored callouts as visible narrative', () => {
     const error: MarimoNode = { type: 'error', name: 'E', message: 'm', traceback: [] };
     const warning: MarimoNode = { type: 'callout', kind: 'warn', children: [{ type: 'html', html: '<p>a</p>' }, error, { type: 'html', html: '<p>b</p>' }] };
-    expect(containsProtectedNotice(warning)).toBe(true);
     expect(classifyNode(warning)).toBe('mixed');
-    expect(warningBodyRuns(warning.type === 'callout' ? warning.children : []).map((run) => run.protected)).toEqual([false, true, false]);
+    const { categories } = getPresentationInventory(doc([cell({ source: undefined, outputs: [warning] })]));
+    expect(categories.warnings.total).toBe(0);
+    expect(categories.errors.total).toBe(0);
   });
 
   it('ignores empty plain-text results', () => {

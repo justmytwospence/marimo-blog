@@ -49,7 +49,7 @@ export function Disclosure({ kind, label, defaultOpen, variant, preview, childre
   return <details ref={ref} className={['mb-disclosure', variant && `mb-disclosure-${variant}`].filter(Boolean).join(' ')} open={defaultOpen}
     data-mb-disclosure="" data-mb-kind={kind} data-mb-default-open={String(defaultOpen)}>
     <summary id={`${id}-summary`} aria-controls={`${id}-body`}>
-      {(variant === 'stderr' || variant === 'warning') && <span className="mb-disclosure-dot" aria-hidden="true" />}
+      {variant === 'stderr' && <span className="mb-disclosure-dot" aria-hidden="true" />}
       <span className="mb-disclosure-label">{label}</span>
       {preview && <span className="mb-disclosure-preview">{preview}</span>}
       {unavailable && <span className="mb-disclosure-status" role="status">Result unavailable</span>}

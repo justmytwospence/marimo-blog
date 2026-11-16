@@ -111,11 +111,11 @@
 .marimo-blog .mb-disclosure-preview { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--mb-muted, var(--_mb-muted)); }
 .marimo-blog .mb-disclosure-status { color: var(--mb-text, var(--_mb-text)); font-weight: 600; border-inline-start: 3px solid var(--mb-danger, var(--_mb-danger)); padding-inline-start: .4rem; }
 .marimo-blog .mb-disclosure-body > .mb-output:first-child { margin-top: .25rem; }
-.marimo-blog :is(.mb-disclosure-source, .mb-disclosure-log, .mb-disclosure-stderr, .mb-disclosure-warning, .mb-disclosure-example, .mb-code-example, .mb-disclosure-result:not(:has(.mb-figure))) { max-width: var(--mb-prose-width, 42rem); margin-inline: auto; }
+.marimo-blog :is(.mb-disclosure-source, .mb-disclosure-log, .mb-disclosure-stderr, .mb-disclosure-example, .mb-code-example, .mb-disclosure-result:not(:has(.mb-figure))) { max-width: var(--mb-prose-width, 42rem); margin-inline: auto; }
 /* Warnings stay legible in both themes: a marker, not a low-contrast hue. */
-.marimo-blog :is(.mb-disclosure-stderr, .mb-disclosure-warning) > summary { color: var(--mb-text, var(--_mb-text)); }
-.marimo-blog .mb-error .mb-disclosure, .marimo-blog .mb-warning .mb-disclosure { max-width: none; }
-.marimo-blog :is(.mb-error, .mb-warning) .mb-disclosure > summary { max-width: none; }
+.marimo-blog .mb-disclosure-stderr > summary { color: var(--mb-text, var(--_mb-text)); }
+.marimo-blog .mb-error .mb-disclosure { max-width: none; }
+.marimo-blog .mb-error .mb-disclosure > summary { max-width: none; }
 .marimo-blog .mb-error { border-color: var(--mb-danger, var(--_mb-danger)); }
 /* View switches: always-visible labeled switches over the native disclosures. */
 .marimo-blog .mb-switches:not([data-ready]) { display: none; }

@@ -29,6 +29,14 @@ function staticArticle(props: Parameters<typeof MarimoArticle>[0]) {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('figure presentation', () => {
+  it('renders authored callouts as visible notes, never folded warnings', () => {
+    const article = staticArticle({ document: documentWith([{ type: 'callout', kind: 'danger', children: [{ type: 'html', html: '<p>Careful</p>' }] }]) });
+    const note = article.querySelector('aside.mb-callout.mb-callout-danger[role="note"]')!;
+    expect(note.querySelector('.mb-callout-title')!.textContent).toBe('Danger');
+    expect(note.textContent).toContain('Careful');
+    expect(article.querySelector('details[data-mb-kind="warnings"]')).toBeNull();
+  });
+
   it('preserves the author chart host while status and caption stay outside it', () => {
     const frame = (state: 'idle' | 'loading' | 'ready' | 'error') => <FigureFrame state={state} caption="Saved evidence" fallback={<p role="status">Figure status</p>}><div data-testid="author-chart" /></FigureFrame>;
     const view = render(frame('idle'));

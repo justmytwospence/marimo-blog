@@ -24,7 +24,8 @@ Eligible source appears in a native **Source** disclosure after its cell's saved
 | Eligible source / published code examples | Folded / expanded | Code |
 | Figures, tables and other structured results | Expanded | Results |
 | stdout | Folded | Logs |
-| stderr and explicit warning/danger callouts | Folded body, visible summary | Warnings (accessible name: Warnings and stderr) |
+| Authored callouts and admonitions | Always visible | None |
+| stderr | Folded body, visible summary | Warnings (accessible name: Warnings and stderr) |
 | Execution errors | Visible name and message, folded details | Errors (accessible name: Error details) |
 | Contents | Auto | Table of contents |
 
