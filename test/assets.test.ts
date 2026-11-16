@@ -48,10 +48,33 @@ describe('safe content-addressed publication', () => {
     const collector = new AssetCollector({ files: {}, assetBase: '/assets' });
     const safe = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 0L20 20" stroke="black"></path></svg>';
     expect(collector.add(Buffer.from(safe), 'image/svg+xml')).toMatch(/\.svg$/);
-    for (const svg of ['<svg><script>alert(1)</script></svg>', '<svg onload="alert(1)"></svg>', '<svg><use href="https://evil.invalid/x.svg#id"/></svg>', '<svg><foreignObject><iframe src="https://evil.invalid"/></foreignObject></svg>']) {
+    for (const svg of ['<svg><script>alert(1)</script></svg>', '<svg onload="alert(1)"></svg>', '<svg><use href="https://evil.invalid/x.svg#id"/></svg>', '<svg><foreignObject><iframe src="https://evil.invalid"/></foreignObject></svg>', '<svg><rect style="fill:url(https://evil.invalid/a)"/></svg>', '<svg><image href="https://evil.invalid/a.png"/></svg>', '<svg><a href="javascript:alert(1)"><rect onclick="x()"/></a></svg>']) {
       expect(() => collector.add(Buffer.from(svg), 'image/svg+xml')).toThrow(/MB_UNSAFE_URL/);
     }
     expect(Buffer.from([...collector.bytes.values()][0]!).toString()).toContain('viewBox="0 0 20 20"');
+  });
+
+  it('sanitizes real matplotlib SVG, keeping its inline styles and raster', async () => {
+    const collector = new AssetCollector({ files: {}, assetBase: '/assets' });
+    collector.add(await readFile(new URL('./fixtures/svg/matplotlib.svg', import.meta.url)), 'image/svg+xml');
+    const stored = Buffer.from([...collector.bytes.values()][0]!).toString();
+    expect(stored).not.toContain('<metadata');
+    expect(stored).not.toContain('<style');
+    expect(stored).toContain('style="fill:');
+    expect(stored).toContain('data:image/png;base64,');
+    expect(collector.diagnostics).toHaveLength(1);
+    expect(collector.diagnostics[0]).toMatchObject({ code: 'MB_SVG_SANITIZED', severity: 'warning' });
+    expect(collector.diagnostics[0]!.message).toMatch(/element metadata.*element style/);
+  });
+
+  it('sanitizes real graphviz SVG by unwrapping links and dropping classes', async () => {
+    const collector = new AssetCollector({ files: {}, assetBase: '/assets' });
+    collector.add(await readFile(new URL('./fixtures/svg/graphviz.svg', import.meta.url)), 'image/svg+xml');
+    const stored = Buffer.from([...collector.bytes.values()][0]!).toString();
+    expect(stored).not.toContain('<a ');
+    expect(stored).not.toContain('class=');
+    expect(stored).toContain('<text');
+    expect(collector.diagnostics[0]!.message).toMatch(/attribute class.*element a/);
   });
 
   it('bounds virtual references and charges duplicate assets only once', async () => {

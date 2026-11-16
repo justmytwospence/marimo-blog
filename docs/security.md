@@ -6,7 +6,7 @@ The compiler handles exports as data; authoring and custom adapters execute trus
 
 - Exporting a notebook executes Python in its authoring environment. Review code and inputs before export.
 - The importer parses official literal globals with Acorn and parse5. It does not evaluate JavaScript or fetch resources.
-- Publication HTML uses allowlisted markup, attributes and CSS. Math uses trust-disabled KaTeX and MathML. SVG assets reject active elements, external references and unsupported attributes before being written to a web origin.
+- Publication HTML uses allowlisted markup, attributes and CSS. Math uses trust-disabled KaTeX and MathML. SVG assets fail on active elements, event handlers and external references, and have inert extras (metadata, stylesheets, classes, links) removed with a warning, before being written to a web origin.
 - Structured payloads are separate hashed assets. Prototype-pollution keys, unreviewed remote resources, path traversal and public-file symlinks are rejected.
 - Use `readDocument` or `parseDocument` at the input boundary. Renderer sanitization is defense in depth, not permission to accept arbitrary uploads.
 - Review source, console, outputs, assets and WASM inventories for private data. `includeSource: false` removes compiled source and its download; hiding/folding code does not. Neither removes secrets in outputs. Native folds retain their content in server-rendered HTML, even with JavaScript disabled. View switches and `htmlRole` are presentation, not access controls.

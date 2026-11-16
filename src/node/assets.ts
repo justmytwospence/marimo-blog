@@ -3,7 +3,7 @@ import { readFile, realpath, lstat } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
 import { parseFragment, serialize } from 'parse5';
 import type { MarimoAsset, MarimoDiagnostic, MarimoNode } from '../types.js';
-import { fail } from '../diagnostics.js';
+import { diagnostic, fail } from '../diagnostics.js';
 import { safeAssetBase, sanitizeOutput, sanitizeSvg } from './sanitize.js';
 
 type HtmlNode = { nodeName: string; tagName?: string; childNodes?: HtmlNode[]; attrs?: { name: string; value: string }[] };
@@ -18,7 +18,11 @@ export class AssetCollector {
   constructor(readonly context: AssetContext) { safeAssetBase(context.assetBase); }
   add(data: Uint8Array, mime: string): string {
     if (data.byteLength > (this.context.maxAssetBytes ?? 64 * 1024 * 1024)) fail('MB_SCHEMA', 'Individual asset exceeds byte limit', 'Raise the explicit byte limit after reviewing the output.');
-    if (mime === 'image/svg+xml') data = Buffer.from(sanitizeSvg(Buffer.from(data).toString('utf8')));
+    if (mime === 'image/svg+xml') {
+      const { svg, removed } = sanitizeSvg(Buffer.from(data).toString('utf8'));
+      data = Buffer.from(svg);
+      if (removed.length) this.diagnostics.push({ ...diagnostic('MB_SVG_SANITIZED', `Removed inert SVG content: ${removed.join(', ')}`, 'Review the figure; export a raster image if it no longer looks right.'), severity: 'warning' });
+    }
     const sha256 = createHash('sha256').update(data).digest('hex');
     const ext = ({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/svg+xml': 'svg', 'application/json': 'json', 'text/csv': 'csv', 'text/html': 'txt', 'text/x-python': 'py', 'audio/mpeg': 'mp3', 'video/mp4': 'mp4' } as Record<string, string>)[mime] ?? 'bin';
     const path = `${sha256}.${ext}`;

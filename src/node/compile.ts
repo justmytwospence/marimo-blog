@@ -71,7 +71,7 @@ export async function compileSnapshot(input: MarimoSnapshot, options: CompileOpt
   }
   if (options.interactive && (!snapshot.source || options.interactive.sourceSha256 !== hash(snapshot.source.replace(/\r\n/g, '\n')) || options.interactive.exporterVersion !== snapshot.exporterVersion)) fail('MB_CELL_HASH', 'Interactive export source/version differs from static export', 'Export WASM from the same source and marimo version.');
   const sourceDownload = config.includeSource !== false && snapshot.source ? assetCollector.add(Buffer.from(snapshot.source), 'text/x-python') : undefined;
-  const acknowledged = diagnostics.map((item) => item.severity === 'error' && item.cellId && config.cells?.[item.cellId]?.allowDiagnostics?.includes(item.code)
+  const acknowledged = [...diagnostics, ...assetCollector.diagnostics].map((item) => item.severity === 'error' && item.cellId && config.cells?.[item.cellId]?.allowDiagnostics?.includes(item.code)
     ? { ...item, severity: 'warning' as const, remediation: `Acknowledged for cell ${item.cellId} by publication config. ${item.remediation}` }
     : item);
   const document: MarimoDocument = {

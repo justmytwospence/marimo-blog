@@ -8,7 +8,7 @@
 | hstack / vstack | Responsive horizontal / vertical layouts preserving child order. |
 | Tabs / accordion / carousel | Captured panels only. Carousel slides become labeled tabs. No-JS fallback includes every panel. |
 | Callout / statistic / JSON / tree | Captured content, including zero and false. JSON/tree payloads load on reader action. |
-| Raster images / SVG | Content-addressed assets. SVG has a conservative element/attribute allowlist; active elements, external references and inline CSS are rejected rather than silently changing the image. Export PNG when an SVG needs unsupported styling. |
+| Raster images / SVG | Content-addressed assets. SVG has a conservative element/attribute allowlist. Inert extras (metadata, stylesheets, classes, links) are removed with an `MB_SVG_SANITIZED` warning; active elements, event handlers and external references fail the build. Export PNG when an SVG needs unsupported styling. |
 | Audio / video | Native controls for bundled supported media. |
 | HTML dataframes | Static table semantics, including colspan/rowspan. |
 | `mo.ui.table` | Up to 20 SSR preview rows; on-demand search, stable sort, pagination and formula-safe CSV over captured rows only. Hidden columns and download policy are retained. Truncation is disclosed. |
