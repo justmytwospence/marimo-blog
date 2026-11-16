@@ -27,6 +27,9 @@ try {
   const probe = `import { parseDocument } from 'marimo-blog'; import { importMarimoHtml } from 'marimo-blog/node'; import fs from 'node:fs'; if (!parseDocument || !importMarimoHtml || !fs.existsSync('node_modules/marimo-blog/dist/styles.css')) process.exit(1);`;
   await writeFile(join(nodeDir, 'probe.mjs'), probe);
   run('node', ['probe.mjs'], nodeDir);
+  // The browser entry point was removed; the root exposes the artifact version.
+  await writeFile(join(nodeDir, 'probe-api.mjs'), `import * as root from 'marimo-blog'; if (root.SCHEMA_VERSION !== 1) process.exit(1); let resolved = true; try { await import('marimo-blog/client'); } catch { resolved = false; } if (resolved) process.exit(2);`);
+  run('node', ['probe-api.mjs'], nodeDir);
   for (const react of ['18.3.1', '19.2.0']) {
     const dir = join(temp, `react-${react}`); await mkdir(dir);
     await writeFile(join(dir, 'package.json'), '{"type":"module","private":true}');

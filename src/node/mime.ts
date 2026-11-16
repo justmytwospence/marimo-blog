@@ -9,11 +9,23 @@ import { AssetCollector } from './assets.js';
 import { sanitizeOutput } from './sanitize.js';
 
 type HtmlNode = { nodeName: string; childNodes?: HtmlNode[]; attrs?: { name: string; value: string }[]; value?: string };
+/** What an output adapter may use while compiling one serialized output. */
+export interface AdapterContext {
+  readonly cellId: string;
+  readonly outputIndex: number;
+  readonly exporterVersion?: string;
+  readonly caption?: string;
+  readonly alt?: string;
+  /** Store bytes as a hashed publication asset; returns its URL. */
+  readonly assets: { add(data: Uint8Array, mime: string): string };
+  /** Append diagnostics; errors fail strict builds unless acknowledged. */
+  readonly diagnostics: MarimoDiagnostic[];
+}
 export interface OutputAdapter {
   name: string;
   exporterVersions: readonly string[];
   matches(output: unknown): boolean;
-  compile(output: unknown, context: MimeContext): MarimoNode[] | Promise<MarimoNode[]>;
+  compile(output: unknown, context: AdapterContext): MarimoNode[] | Promise<MarimoNode[]>;
 }
 export interface MimeContext { html: HtmlContext; assets: AssetCollector; diagnostics: MarimoDiagnostic[]; cellId: string; outputIndex: number; htmlMode?: 'sanitize' | 'sandbox'; htmlRole?: 'narrative' | 'result'; caption?: string; alt?: string; poster?: string; sandboxScriptUrls?: string[]; sandboxAllowEval?: boolean; depth?: number; exporterVersion?: string; adapters?: readonly OutputAdapter[] }
 async function assetJson(value: unknown, type: 'plotly' | 'vega' | 'table' | 'json', context: MimeContext): Promise<MarimoNode> {

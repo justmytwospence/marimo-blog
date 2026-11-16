@@ -27,7 +27,7 @@ An unrecognized composition fails rather than dropping textless sibling charts o
 
 ## Build-time adapters
 
-`OutputAdapter` and `MimeContext` are exported from `marimo-blog/node`. Pass adapters explicitly to `compileSnapshot(snapshot, { metadata, assetBase, adapters })`:
+`OutputAdapter` and `AdapterContext` are exported from `marimo-blog/node`. Pass adapters explicitly to `compileSnapshot(snapshot, { metadata, assetBase, adapters })`:
 
 ```ts
 const adapter: OutputAdapter = {
@@ -40,7 +40,7 @@ const adapter: OutputAdapter = {
 };
 ```
 
-Names must be unique and versions explicit. Matching adapters run before built-ins. Context exposes the asset collector and diagnostics; returned nodes still go through asset rewriting and manifest validation. Adapters are trusted Node code with the privileges of the build process, not a sandbox or downloadable browser plugin. Do not load adapters from untrusted metadata.
+Names must be unique and versions explicit. Matching adapters run before built-ins. Context exposes the cell/output identity, caption/alt, an asset store (`assets.add`) and diagnostics; returned nodes still go through asset rewriting and manifest validation. Adapters are trusted Node code with the privileges of the build process, not a sandbox or downloadable browser plugin. Do not load adapters from untrusted metadata.
 
 ## Diagnostics
 

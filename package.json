@@ -33,10 +33,6 @@
       "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
-    "./client": {
-      "types": "./dist/client/index.d.ts",
-      "default": "./dist/client/index.js"
-    },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },

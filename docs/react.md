@@ -1,5 +1,7 @@
 # React integration
 
+Entry points: `marimo-blog` (types, `parseDocument`, `SCHEMA_VERSION`), `marimo-blog/react` (`MarimoArticle`), `marimo-blog/node` (build tooling) and `marimo-blog/styles.css`.
+
 `MarimoArticle` is server-compatible; client code enhances captured outputs without requiring a Python server.
 
 ```tsx
@@ -29,7 +31,7 @@ Eligible source appears in a native **Source** disclosure after its cell's saved
 | Execution errors | Visible name and message, folded details | Errors (accessible name: Error details) |
 | Contents | Auto | Table of contents |
 
-Code blocks (cell source, code examples and `<pre>` in prose) are highlighted on the server with highlight.js (Python, SQL, Shell, JSON, YAML, JavaScript, TypeScript, R, Markdown). Closed, a block reads as its language and line count; opened inside `MarimoArticle`, that row becomes the block header with **Lines**, **Wrap**, **Copy** and **Hide** buttons. Line numbers default on for blocks of 15 or more lines when the article is wider than 40rem, and off otherwise; **Lines** overrides this per block. Below 40rem the buttons are icon-only. Blocks over 25 lines are capped behind "Show all N lines". Without JavaScript the native disclosure is the header and blocks stay fully expanded. A standalone `CodeBlock` from `marimo-blog/react` is highlighted but not interactive. Plain-text console output and stderr use the same block, titled "Console output" or "stderr", with **Wrap**, **Copy** and **Hide** but no line numbers.
+Code blocks (cell source, code examples and `<pre>` in prose) are highlighted on the server with highlight.js (Python, SQL, Shell, JSON, YAML, JavaScript, TypeScript, R, Markdown). Closed, a block reads as its language and line count; opened inside `MarimoArticle`, that row becomes the block header with **Lines**, **Wrap**, **Copy** and **Hide** buttons. Line numbers default on for blocks of 15 or more lines when the article is wider than 40rem, and off otherwise; **Lines** overrides this per block. Below 40rem the buttons are icon-only. Blocks over 25 lines are capped behind "Show all N lines". Without JavaScript the native disclosure is the header and blocks stay fully expanded. Plain-text console output and stderr use the same block, titled "Console output" or "stderr", with **Wrap**, **Copy** and **Hide** but no line numbers.
 
 Closed regions render as compact cards showing type, caption or language, and a Show hint; each card toggles only itself. In the contents rail the switches sit above the list, one per line. Each eligible region also has a native local disclosure. Labeled on/off switches appear under the header and, in a compact grid, at the top of the open contents rail; both stay in sync. Only available categories appear. A switch shows a half-filled mixed state when only some of its regions are expanded; activating it expands all. **Reset view** appears only after a change and restores defaults and responsive contents. Preferences are article-scoped and reset on document replacement or reload. The `presentation` prop accepts `contents: 'auto' | 'expanded' | 'collapsed'` and `results`, `codeBlocks`, `logs`, `warnings`, `errors` as `'expanded' | 'collapsed'`; defaults are shown above. `toc={false}` removes contents entirely.
 

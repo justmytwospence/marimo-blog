@@ -1,12 +1,9 @@
 export { importMarimoHtml } from './import-html.js';
 export type { ImportOptions } from './import-html.js';
-export { validateSnapshots } from './snapshots.js';
 export type { MarimoSnapshot } from './snapshots.js';
 export { compileSnapshot } from './compile.js';
-export type { OutputAdapter, MimeContext } from './mime.js';
+export type { OutputAdapter, AdapterContext } from './mime.js';
 export type { CompileOptions, BuildResult } from './compile.js';
-export { collectAssets } from './assets.js';
-export type { AssetContext, CollectedAssets } from './assets.js';
 export { readDocument, writeBuild, verifyBuild } from './write.js';
 export type { WriteOptions } from './write.js';
 export { parseMetadataYaml, hashPublicationConfig } from './metadata.js';
