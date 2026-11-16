@@ -25,7 +25,7 @@ Publication options:
 - `cells`: original cell IDs, with `include`, `code`, `allowDiagnostics`, and zero-indexed `outputs`.
 - Output options: `caption`, `alt`, chart `poster`, `html: sanitize | sandbox`, optional `htmlRole: narrative | result`, and default-off `sandboxAllowEval` (requires sandbox).
 
-`htmlRole` applies only to HTML leaves of that output, including leaves in mixed structures. Unmarked HTML defaults to protected narrative; `result` opts those leaves into result folding. It does not change source eligibility, sanitization or strict diagnostics. Newly marked manifests require an updated reader; older strict readers reject the new HTML role field.
+`htmlRole` applies only to HTML leaves of that output, including leaves in mixed structures. Unmarked HTML defaults to protected narrative; `result` opts those leaves into result folding. It does not change source eligibility, sanitization or strict diagnostics. Older artifacts stay readable; see Artifact compatibility.
 
 Example of a reviewed exception:
 
@@ -46,3 +46,12 @@ Cell/output mismatches fail rather than ignoring stale overrides. A caption is l
 The manifest records export, source and normalized publication-configuration hashes. `check --metadata post.yaml` detects changed YAML, while asset verification detects changed/missing published bytes. Changes to an original local poster/source require an intentional reimport; the package does not watch authoring files.
 
 Hidden code is not private. Review outputs separately. See [security](security.md).
+
+## Artifact compatibility
+
+- Every artifact carries an integer `schemaVersion` (`SCHEMA_VERSION`, exported from `marimo-blog`).
+- `parseDocument` upgrades older artifacts in memory through pure, Python-free migrations, then validates them strictly.
+- A newer artifact fails with `MB_SCHEMA_VERSION`: upgrade the package to read it.
+- Any change to the artifact shape, including an added optional field, bumps `schemaVersion` and ships a migration.
+- A release reads every older `schemaVersion` of its major version; dropping one requires a new major release.
+- Committed artifacts never need re-execution to stay readable. Rebuilding with `marimo-blog build` refreshes them to the current version.

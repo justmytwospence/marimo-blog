@@ -1,8 +1,9 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { importMarimoHtml } from '../src/node/import-html.js';
 import { compileSnapshot } from '../src/node/compile.js';
 import { MarimoBlogError } from '../src/diagnostics.js';
-import { getPlainText, parseDocument } from '../src/index.js';
+import { getPlainText, parseDocument, SCHEMA_VERSION } from '../src/index.js';
 import { parseMetadataYaml } from '../src/node/metadata.js';
 import { compileHtml, normalizeMarimoMarkup } from '../src/node/html.js';
 
@@ -149,5 +150,20 @@ describe('literal marimo export boundary', () => {
     expect(document.diagnostics).toContainEqual(expect.objectContaining({ code: 'MB_ALT_MISSING', severity: 'warning', cellId: 'one', outputIndex: 1 }));
     const described = await compileSnapshot(snapshot, { metadata: { ...base, cells: { one: { ...base.cells.one, outputs: { '1': { alt: 'A figure' } } } } }, assetBase: '/notebooks/article/assets' });
     expect(described.document.diagnostics.some((item) => item.code === 'MB_ALT_MISSING')).toBe(false);
+  });
+  it('versions artifacts and pins schema v1', async () => {
+    const { document } = await compileSnapshot(importMarimoHtml(exportHtml()), { metadata: { ...config, cells: { one: { allowDiagnostics: ['MB_SCRIPT_SANDBOX'] } } }, assetBase: '/notebooks/article/assets' });
+    expect(document.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(() => parseDocument({ ...document, schemaVersion: SCHEMA_VERSION + 1 })).toThrow(/MB_SCHEMA_VERSION[\s\S]*newer/);
+    expect(() => parseDocument({ ...document, schemaVersion: 0 })).toThrow(/MB_SCHEMA_VERSION/);
+    expect(() => parseDocument({ ...document, schemaVersion: 1.5 })).toThrow(/MB_SCHEMA_VERSION/);
+    expect(() => parseDocument({})).toThrow(/MB_SCHEMA/);
+    const pinned = JSON.parse(readFileSync(new URL('./fixtures/schema-v1-document.json', import.meta.url), 'utf8'));
+    expect(parseDocument(pinned).schemaVersion).toBe(1);
+  });
+
+  it('records the package version as producer', async () => {
+    const { document } = await compileSnapshot(importMarimoHtml(exportHtml()), { metadata: { ...config, cells: { one: { allowDiagnostics: ['MB_SCRIPT_SANDBOX'] } } }, assetBase: '/notebooks/article/assets' });
+    expect(document.provenance.producerVersion).toBe((JSON.parse(readFileSync('package.json', 'utf8')) as { version: string }).version);
   });
 });

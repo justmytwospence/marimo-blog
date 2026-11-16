@@ -3,6 +3,9 @@ import { z } from 'zod';
 import type { MarimoDocument, TocEntry } from './types.js';
 import { fail } from './diagnostics.js';
 
+/** Increment on every change to the artifact shape, and add a migration from the previous version. */
+export const SCHEMA_VERSION = 1;
+
 export const metadataSchema = z.strictObject({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string().min(1), date: z.iso.date(), description: z.string().min(1),
@@ -31,7 +34,7 @@ const nodeSchema: z.ZodType<import('./types.js').MarimoNode> = z.lazy(() => z.di
   z.strictObject({ type: z.literal('unsupported'), mime: z.string(), message: z.string() }),
 ]));
 const documentSchema = z.strictObject({
-  schemaVersion: z.literal(1), metadata: metadataSchema,
+  schemaVersion: z.literal(SCHEMA_VERSION), metadata: metadataSchema,
   provenance: z.strictObject({ exporterVersion: z.string(), notebookVersion: z.literal('1'), sessionVersion: z.literal('1'), inputSha256: z.string().regex(/^[a-f0-9]{64}$/), publicationConfigSha256: z.string().regex(/^[a-f0-9]{64}$/), producerVersion: z.string(), sourceHashes: z.record(z.string(), z.string().regex(/^[a-f0-9]{64}$/)), sourceSha256: z.string().regex(/^[a-f0-9]{64}$/).optional() }),
   assetBase: z.string().regex(/^\/(?!\/)(?:[^?#]*)$/),
   cells: z.array(z.strictObject({ id: z.string(), ordinal: z.number().int().nonnegative(), name: z.string().optional(), source: z.string().optional(), sourceLanguage: z.string(), hideCode: z.boolean(), disabled: z.boolean(), code: z.enum(['folded', 'visible', 'hidden']), console: z.enum(['collapsed', 'visible', 'hidden']), outputs: z.array(nodeSchema), consoleOutputs: z.array(nodeSchema) })),
@@ -40,8 +43,25 @@ const documentSchema = z.strictObject({
   interactive: z.strictObject({ url: z.string().regex(/^\/(?!\/)/), exporterVersion: z.string(), sourceSha256: z.string().regex(/^[a-f0-9]{64}$/) }).optional(),
 });
 
-export function parseDocument(value: unknown): MarimoDocument {
-  const parsed = documentSchema.safeParse(value);
+type Migration = (document: Record<string, unknown>) => Record<string, unknown>;
+/** migrations[n] upgrades an artifact from schemaVersion n to n + 1, without Python. */
+const migrations: Record<number, Migration> = {};
+function upgradeDocument(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || !('schemaVersion' in value)) return value;
+  let version = (value as { schemaVersion: unknown }).schemaVersion;
+  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) fail('MB_SCHEMA_VERSION', `Unsupported artifact schemaVersion ${String(version)}`, 'Rebuild the publication from its supported export.');
+  if (version > SCHEMA_VERSION) fail('MB_SCHEMA_VERSION', `Artifact schemaVersion ${version} is newer than this reader (supports ${SCHEMA_VERSION})`, 'Upgrade marimo-blog to read this artifact.');
+  let document = value as Record<string, unknown>;
+  for (; version < SCHEMA_VERSION; version++) {
+    const migrate = migrations[version];
+    if (!migrate) fail('MB_SCHEMA_VERSION', `No migration from schemaVersion ${version}`, 'Rebuild the publication.');
+    document = { ...migrate(document), schemaVersion: version + 1 };
+  }
+  return document;
+}
+
+export function parseDocument(input: unknown): MarimoDocument {
+  const parsed = documentSchema.safeParse(upgradeDocument(input));
   if (!parsed.success) fail('MB_SCHEMA', parsed.error.message, 'Rebuild the publication from its supported export.');
   const document = parsed.data;
   if (safeAssetBase(document.assetBase) !== document.assetBase) fail('MB_SCHEMA', 'Noncanonical asset base', 'Rebuild with a canonical root-relative asset base.');

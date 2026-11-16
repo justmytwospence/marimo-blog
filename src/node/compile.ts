@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { parseFragment } from 'parse5';
 import type { InteractiveDescriptor, MarimoDocument, MarimoDiagnostic, MarimoMetadata, MarimoNode } from '../types.js';
 import { MarimoBlogError, diagnostic, fail } from '../diagnostics.js';
-import { parseDocument, metadataSchema } from '../schema.js';
+import { parseDocument, metadataSchema, SCHEMA_VERSION } from '../schema.js';
 import { AssetCollector } from './assets.js';
 import { compileMime, type OutputAdapter } from './mime.js';
 import { hashPublicationConfig, publicationSchema, type PublicationConfig } from './metadata.js';
@@ -85,7 +85,7 @@ export async function compileSnapshot(input: MarimoSnapshot, options: CompileOpt
     ? { ...item, severity: 'warning' as const, remediation: `Acknowledged for cell ${item.cellId} by publication config. ${item.remediation}` }
     : item);
   const document: MarimoDocument = {
-    schemaVersion: 1, metadata, provenance: {
+    schemaVersion: SCHEMA_VERSION, metadata, provenance: {
       exporterVersion: snapshot.exporterVersion, notebookVersion: '1', sessionVersion: '1', inputSha256: snapshot.inputSha256,
       publicationConfigSha256: hashPublicationConfig(config), producerVersion: version, sourceHashes,
       ...(snapshot.source ? { sourceSha256: hash(snapshot.source.replace(/\r\n/g, '\n')) } : {}),

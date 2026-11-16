@@ -33,6 +33,7 @@ The example is a server component; browser-only hosts can load JSON and call `pa
 
 ## Boundaries
 
+- Artifacts are versioned (`schemaVersion`); newer readers upgrade older artifacts without Python. See docs/metadata.md.
 - Official exporter versions **0.25.0, 0.25.1, 0.25.2**, Node **22+**, React **18.3.1 or 19**.
 - Saved prose, MathML, images, tables, tabs, accordions, carousel panels, callouts, statistics, and JSON trees.
 - Lazy Plotly/Vega specs; figures over 5 MiB require reader action. Table search/sort/download use captured rows only.
