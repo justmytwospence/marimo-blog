@@ -12,7 +12,7 @@ import { lineLabel, resolveLanguage } from './code.js';
 import { FigureFrame } from '../client/FigureFrame.js';
 import { Disclosure } from '../client/Disclosure.js';
 import { HtmlOutput } from './HtmlOutput.js';
-import { safeAssetUrl } from './safety.js';
+import { safeAssetUrl } from '../shared/url.js';
 import { isEmptyResult, presentationRuns, resolvePresentation, type MarimoPresentationOptions, type ResolvedPresentation } from './presentation.js';
 import { calloutStyle } from '../shared/callout.js';
 

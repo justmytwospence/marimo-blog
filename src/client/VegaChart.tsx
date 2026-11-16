@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { safeAssetUrl } from '../react/safety.js';
+import { safeAssetUrl } from '../shared/url.js';
 import { FigureFrame } from './FigureFrame.js';
 import { onRenderableReveal, waitForRenderable } from './waitForRenderable.js';
 

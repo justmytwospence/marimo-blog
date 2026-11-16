@@ -13,6 +13,7 @@
   "bugs": "https://github.com/justmytwospence/marimo-blog/issues",
   "keywords": ["marimo", "notebook", "react", "publishing", "ssr"],
   "type": "module",
+  "sideEffects": ["**/*.css"],
   "engines": {
     "node": ">=22"
   },

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { emitOutputStatus } from './presentation-events.js';
-import { safeAssetUrl } from '../react/safety.js';
+import { safeAssetUrl } from '../shared/url.js';
 
 export function JsonTree({ asset, caption }: { asset: string; caption?: string }) {
   const url = safeAssetUrl(asset);

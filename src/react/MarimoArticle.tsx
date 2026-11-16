@@ -5,7 +5,7 @@ import { TableOfContents } from '../client/TableOfContents.js';
 import { CodeEnhancer } from '../client/CodeEnhancer.js';
 import { MarimoCell } from './MarimoCell.js';
 import { getPresentationInventory, resolvePresentation, type MarimoPresentationOptions } from './presentation.js';
-import { safeAssetUrl } from './safety.js';
+import { safeAssetUrl } from '../shared/url.js';
 
 export interface MarimoArticleProps {
   document: MarimoDocument;

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { emitOutputStatus } from './presentation-events.js';
-import { safeAssetUrl } from '../react/safety.js';
+import { safeAssetUrl } from '../shared/url.js';
 
 type Value = string | number | boolean | null;
 type TablePayload = { headers: string[]; rows: Value[][]; totalRows?: number; download?: boolean };
