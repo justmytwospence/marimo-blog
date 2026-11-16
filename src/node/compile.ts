@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { parseFragment } from 'parse5';
 import type { InteractiveDescriptor, MarimoDocument, MarimoDiagnostic, MarimoMetadata, MarimoNode } from '../types.js';
 import { MarimoBlogError, diagnostic, fail } from '../diagnostics.js';
@@ -12,7 +13,7 @@ import { validateSnapshots, type MarimoSnapshot } from './snapshots.js';
 export interface CompileOptions { metadata: PublicationConfig | MarimoMetadata; assetBase: string; publicDir?: string; interactive?: InteractiveDescriptor; strict?: boolean; maxAssetBytes?: number; maxOutputBytes?: number; adapters?: readonly OutputAdapter[] }
 export interface BuildResult { document: MarimoDocument; assets: Map<string, Uint8Array> }
 const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
-const version = '0.1.0';
+const version = (JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version: string }).version;
 function plain(html: string): string {
   type Node = { tagName?: string; value?: string; childNodes?: Node[] };
   const walk = (node: Node): string => ['pre', 'table', 'script', 'style'].includes(node.tagName ?? '') ? '' : (node.value ?? '') + (node.childNodes ?? []).map(walk).join(' ');
