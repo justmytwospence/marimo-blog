@@ -6,6 +6,7 @@ import type { PresentationInventory } from '../react/presentation.js';
 import { ArticleControls } from './ArticleControls.js';
 import { setDisclosureOpen } from './Disclosure.js';
 import { contentsModeEvent, setContentsMode, type ContentsMode } from './contents-mode.js';
+import { followStickyRail } from './sticky-rail.js';
 
 export { setContentsMode };
 export type { ContentsMode };
@@ -75,6 +76,10 @@ export function TableOfContents({ entries, initialMode = 'auto', controls }: { e
       details.removeEventListener('toggle', nativeToggle);
     };
   }, [initialMode]);
+  useEffect(() => {
+    const nav = navRef.current;
+    return nav ? followStickyRail(nav) : undefined;
+  }, []);
   useEffect(() => {
     const article = navRef.current?.closest('.marimo-blog');
     if (!article) return;
